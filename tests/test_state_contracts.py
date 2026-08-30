@@ -7,12 +7,17 @@ from pydantic import ValidationError
 
 from mnemox_control.canonical import content_sha256
 from mnemox_control.state import (
+    HaltState,
     InstrumentCatalog,
     InstrumentSpec,
     InstrumentType,
     MarketQuote,
     MarketSnapshot,
+    OpenOrderExposure,
+    OpenOrderStatus,
+    Position,
     PositionMode,
+    TrustedAccountSnapshot,
 )
 
 
@@ -69,6 +74,27 @@ def market_data(*, quotes: tuple[MarketQuote, ...]) -> dict[str, object]:
             16,
             tzinfo=timezone(timedelta(hours=8)),
         ),
+    }
+
+
+@pytest.fixture
+def valid_account_data() -> dict[str, object]:
+    return {
+        "snapshot_id": UUID("018f84d7-46a7-7e8d-97de-4a3f13635d42"),
+        "state_version": 7,
+        "source": "binance-user-stream",
+        "account_id": "paper-1",
+        "broker": "binance-demo",
+        "equity": Decimal("10000"),
+        "cash_balance": Decimal("10000"),
+        "realized_pnl_today": Decimal("0"),
+        "realized_pnl_period_start": datetime(2026, 8, 30, tzinfo=UTC),
+        "realized_pnl_period_end": datetime(2026, 8, 31, tzinfo=UTC),
+        "drawdown_from_peak": Decimal("0"),
+        "positions": (),
+        "open_orders": (),
+        "halt_state": "NORMAL",
+        "observed_at": datetime(2026, 8, 30, 8, tzinfo=UTC),
     }
 
 
@@ -200,3 +226,161 @@ def test_state_contracts_reject_unknown_fields_and_mutation(valid_quote: MarketQ
 
     with pytest.raises(ValidationError):
         valid_quote.symbol = "ETHUSDT"  # type: ignore[misc]
+
+
+def test_position_preserves_signed_quantity_and_normalizes_symbol() -> None:
+    position = Position(symbol=" btcusdt ", signed_quantity="-1.25")
+
+    assert position.symbol == "BTCUSDT"
+    assert position.signed_quantity == Decimal("-1.25")
+
+
+def test_account_rejects_duplicate_positions(valid_account_data: dict[str, object]) -> None:
+    position = Position(symbol="BTCUSDT", signed_quantity="1")
+    valid_account_data["positions"] = (position, position)
+
+    with pytest.raises(ValidationError, match="position symbols"):
+        TrustedAccountSnapshot(**valid_account_data)
+
+
+def test_unknown_order_requires_full_positive_remaining_exposure() -> None:
+    order = OpenOrderExposure(
+        broker_order_id="order-1",
+        intent_id=None,
+        symbol="BTCUSDT",
+        side="BUY",
+        remaining_quantity="0.2",
+        reduce_only=False,
+        reference_price="100000",
+        status="UNKNOWN",
+    )
+
+    assert order.remaining_quantity == Decimal("0.2")
+    assert order.status is OpenOrderStatus.UNKNOWN
+
+
+@pytest.mark.parametrize("field", ["remaining_quantity", "reference_price"])
+def test_open_order_requires_positive_exposure(field: str) -> None:
+    data: dict[str, object] = {
+        "broker_order_id": "order-1",
+        "intent_id": None,
+        "symbol": "BTCUSDT",
+        "side": "BUY",
+        "remaining_quantity": "0.2",
+        "reduce_only": False,
+        "reference_price": "100000",
+        "status": "NEW",
+    }
+    data[field] = "0"
+
+    with pytest.raises(ValidationError):
+        OpenOrderExposure(**data)
+
+
+def test_account_rejects_duplicate_broker_order_ids(
+    valid_account_data: dict[str, object],
+) -> None:
+    order = OpenOrderExposure(
+        broker_order_id="order-1",
+        symbol="BTCUSDT",
+        side="SELL",
+        remaining_quantity="0.2",
+        reduce_only=False,
+        reference_price="100000",
+        status="PENDING_CANCEL",
+    )
+    valid_account_data["open_orders"] = (order, order)
+
+    with pytest.raises(ValidationError, match="broker order IDs"):
+        TrustedAccountSnapshot(**valid_account_data)
+
+
+def test_account_sorts_positions_and_orders(valid_account_data: dict[str, object]) -> None:
+    valid_account_data["positions"] = (
+        Position(symbol="ETHUSDT", signed_quantity="1"),
+        Position(symbol="BTCUSDT", signed_quantity="-1"),
+    )
+    valid_account_data["open_orders"] = (
+        OpenOrderExposure(
+            broker_order_id="order-2",
+            symbol="ETHUSDT",
+            side="BUY",
+            remaining_quantity="1",
+            reduce_only=False,
+            reference_price="2000",
+            status="PARTIALLY_FILLED",
+        ),
+        OpenOrderExposure(
+            broker_order_id="order-1",
+            symbol="BTCUSDT",
+            side="SELL",
+            remaining_quantity="0.1",
+            reduce_only=True,
+            reference_price="100000",
+            status="NEW",
+        ),
+    )
+
+    account = TrustedAccountSnapshot(**valid_account_data)
+
+    assert tuple(position.symbol for position in account.positions) == ("BTCUSDT", "ETHUSDT")
+    assert tuple(order.broker_order_id for order in account.open_orders) == (
+        "order-1",
+        "order-2",
+    )
+
+
+@pytest.mark.parametrize(
+    ("field", "value", "match"),
+    [
+        ("state_version", 0, "greater than 0"),
+        ("drawdown_from_peak", Decimal("-0.01"), "greater than or equal to 0"),
+    ],
+)
+def test_account_rejects_invalid_risk_state(
+    valid_account_data: dict[str, object], field: str, value: object, match: str
+) -> None:
+    valid_account_data[field] = value
+
+    with pytest.raises(ValidationError, match=match):
+        TrustedAccountSnapshot(**valid_account_data)
+
+
+def test_account_requires_half_open_pnl_window(valid_account_data: dict[str, object]) -> None:
+    valid_account_data["realized_pnl_period_end"] = valid_account_data[
+        "realized_pnl_period_start"
+    ]
+
+    with pytest.raises(ValidationError, match="period_end"):
+        TrustedAccountSnapshot(**valid_account_data)
+
+
+def test_account_normalizes_utc_and_hashes_without_mutation(
+    valid_account_data: dict[str, object],
+) -> None:
+    valid_account_data["observed_at"] = datetime(
+        2026, 8, 30, 16, tzinfo=timezone(timedelta(hours=8))
+    )
+    account = TrustedAccountSnapshot(**valid_account_data)
+    sealed = account.with_content_hash()
+
+    assert account.observed_at == datetime(2026, 8, 30, 8, tzinfo=UTC)
+    assert account.content_hash is None
+    assert sealed.content_hash == content_sha256(account, exclude={"content_hash"})
+
+
+def test_account_rejects_bad_hash_unknown_fields_and_mutation(
+    valid_account_data: dict[str, object],
+) -> None:
+    valid_account_data["content_hash"] = "A" * 64
+    valid_account_data["surprise"] = True
+
+    with pytest.raises(ValidationError):
+        TrustedAccountSnapshot(**valid_account_data)
+
+    valid_account_data.pop("content_hash")
+    valid_account_data.pop("surprise")
+    account = TrustedAccountSnapshot(**valid_account_data)
+    assert account.halt_state is HaltState.NORMAL
+    with pytest.raises(ValidationError):
+        account.state_version = 8  # type: ignore[misc]

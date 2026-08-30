@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import re
 from datetime import datetime
+from decimal import Decimal
 from enum import StrEnum
 from typing import Annotated, Self
 from uuid import UUID
@@ -11,7 +12,13 @@ from uuid import UUID
 from pydantic import Field, field_validator, model_validator
 
 from mnemox_control.canonical import content_sha256
-from mnemox_control.contracts import NonBlankStr, PositiveDecimal, StrictFrozenModel
+from mnemox_control.contracts import (
+    NonBlankStr,
+    NonNegativeDecimal,
+    PositiveDecimal,
+    Side,
+    StrictFrozenModel,
+)
 
 _HASH_PATTERN = re.compile(r"^[0-9a-f]{64}$")
 
@@ -37,6 +44,25 @@ class PositionMode(StrEnum):
 
     ONE_WAY = "ONE_WAY"
     HEDGE = "HEDGE"
+
+
+class OpenOrderStatus(StrEnum):
+    """All broker order states that still contribute exposure."""
+
+    NEW = "NEW"
+    PARTIALLY_FILLED = "PARTIALLY_FILLED"
+    PENDING_CANCEL = "PENDING_CANCEL"
+    UNKNOWN = "UNKNOWN"
+
+
+class HaltState(StrEnum):
+    """Trusted account-level execution safety state."""
+
+    NORMAL = "NORMAL"
+    SOFT_HALT = "SOFT_HALT"
+    REDUCE_ONLY = "REDUCE_ONLY"
+    FULL_HALT = "FULL_HALT"
+    RECONCILE_REQUIRED = "RECONCILE_REQUIRED"
 
 
 class InstrumentSpec(StrictFrozenModel):
@@ -92,6 +118,91 @@ class InstrumentCatalog(StrictFrozenModel):
 
     def with_content_hash(self) -> Self:
         """Return a sealed copy without mutating the caller's catalog."""
+        digest = content_sha256(self, exclude={"content_hash"})
+        return self.model_copy(update={"content_hash": digest})
+
+
+class Position(StrictFrozenModel):
+    """One broker position represented as a signed quantity."""
+
+    symbol: NonBlankStr
+    signed_quantity: Decimal
+
+    @field_validator("symbol", mode="after")
+    @classmethod
+    def uppercase_symbol(cls, value: str) -> str:
+        return value.upper()
+
+
+class OpenOrderExposure(StrictFrozenModel):
+    """Remaining exposure from one non-terminal broker order."""
+
+    broker_order_id: NonBlankStr
+    intent_id: UUID | None = None
+    symbol: NonBlankStr
+    side: Side
+    remaining_quantity: PositiveDecimal
+    reduce_only: bool
+    reference_price: PositiveDecimal
+    status: OpenOrderStatus
+
+    @field_validator("symbol", mode="after")
+    @classmethod
+    def uppercase_symbol(cls, value: str) -> str:
+        return value.upper()
+
+
+class TrustedAccountSnapshot(StrictFrozenModel):
+    """Trusted, immutable account state used as evaluation evidence."""
+
+    snapshot_id: UUID
+    state_version: Annotated[int, Field(gt=0)]
+    source: NonBlankStr
+    account_id: NonBlankStr
+    broker: NonBlankStr
+    equity: Decimal
+    cash_balance: Decimal
+    realized_pnl_today: Decimal
+    realized_pnl_period_start: datetime
+    realized_pnl_period_end: datetime
+    drawdown_from_peak: NonNegativeDecimal
+    positions: tuple[Position, ...]
+    open_orders: tuple[OpenOrderExposure, ...]
+    halt_state: HaltState
+    observed_at: datetime
+    content_hash: str | None = None
+
+    @field_validator("positions", mode="after")
+    @classmethod
+    def sort_positions(cls, value: tuple[Position, ...]) -> tuple[Position, ...]:
+        return tuple(sorted(value, key=lambda position: position.symbol))
+
+    @field_validator("open_orders", mode="after")
+    @classmethod
+    def sort_open_orders(
+        cls, value: tuple[OpenOrderExposure, ...]
+    ) -> tuple[OpenOrderExposure, ...]:
+        return tuple(sorted(value, key=lambda order: order.broker_order_id))
+
+    @field_validator("content_hash")
+    @classmethod
+    def validate_content_hash(cls, value: str | None) -> str | None:
+        return _validated_hash(value)
+
+    @model_validator(mode="after")
+    def validate_account_shape(self) -> Self:
+        position_symbols = [position.symbol for position in self.positions]
+        if len(position_symbols) != len(set(position_symbols)):
+            raise ValueError("position symbols must be unique")
+        order_ids = [order.broker_order_id for order in self.open_orders]
+        if len(order_ids) != len(set(order_ids)):
+            raise ValueError("broker order IDs must be unique")
+        if self.realized_pnl_period_start >= self.realized_pnl_period_end:
+            raise ValueError("realized_pnl_period_end must be later than period_start")
+        return self
+
+    def with_content_hash(self) -> Self:
+        """Return a sealed copy without mutating the caller's account snapshot."""
         digest = content_sha256(self, exclude={"content_hash"})
         return self.model_copy(update={"content_hash": digest})
 

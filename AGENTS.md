@@ -25,6 +25,8 @@
 - SPDX license texts were copied without modification (ignoring only final newline); Hypothesis 6.167.0 is installed for the planned property tests; 52 tests pass.
 - Evaluation Kernel v0.2 Task 2 is complete: immutable instrument catalogs and market snapshots enforce recognized enum vocabularies, broker/identity uniqueness, positive quote/instrument constraints, UTC timestamps, and canonical sealing.
 - The shared timestamp validator now rejects naive timestamps even when supplied as strings; 70 tests pass, Ruff passes, and strict mypy passes across 4 source files.
+- Evaluation Kernel v0.2 Task 3 is complete: trusted account snapshots bind a positive state version, signed positions, every non-terminal/UNKNOWN order, P&L period, drawdown, halt state, and deterministic content hash.
+- Account contracts sort evidence by stable keys and reject duplicate position symbols/order IDs, invalid exposure values, invalid P&L windows, bad hashes, unknown fields, and mutation; 82 tests pass.
 
 ## Recent Changes
 
@@ -37,3 +39,4 @@
 - 2026-08-30: Added the approved v0.2 implementation plan and replaced `tasks.txt` with ten self-contained auto-Codex tasks.
 - 2026-08-30: Established the v0.2 engine/protocol license boundary, added exact SPDX license texts and commercial licensing notice, bumped the package to 0.2.0, and added Hypothesis to dev dependencies.
 - 2026-08-30: Added sealed instrument/catalog and market/quote contracts, including deterministic hash support and known-but-unsupported instrument representation.
+- 2026-08-30: Added trusted account, signed position, pending-order exposure, order-status, and halt-state contracts with conservative UNKNOWN-order representation.
