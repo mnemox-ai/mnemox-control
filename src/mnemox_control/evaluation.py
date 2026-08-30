@@ -192,10 +192,18 @@ class EvaluationResult(StrictFrozenModel):
             self.position_effect,
         )
         if any(value is None for value in metrics):
+            leverage_only_undefined = (
+                self.projected_leverage is None
+                and all(value is not None for value in metrics[:-2])
+                and self.position_effect is not None
+                and rule_by_code[ReasonCode.NON_POSITIVE_EQUITY].actual is True
+            )
             has_blocking_evidence = any(
                 rule.outcome is RuleOutcome.SKIP and rule.blocked_by for rule in self.rules
             )
-            if RuleOutcome.DENY not in outcomes or not has_blocking_evidence:
+            if not leverage_only_undefined and (
+                RuleOutcome.DENY not in outcomes or not has_blocking_evidence
+            ):
                 raise ValueError("undefined metrics require blocking DENY evidence")
         return self
 

@@ -4,18 +4,66 @@ from __future__ import annotations
 
 from datetime import UTC, datetime, timedelta
 from decimal import Decimal
+from enum import StrEnum
 
-from mnemox_control.calculations import build_exposure_metrics, reference_price
+from mnemox_control.calculations import (
+    build_exposure_metrics,
+    is_step_aligned,
+    reference_price,
+    signed_order_quantity,
+)
 from mnemox_control.canonical import content_sha256
-from mnemox_control.contracts import Decision, OrderIntent, PolicyBundle
+from mnemox_control.contracts import Decision, OrderIntent, OrderType, PolicyBundle, Side
 from mnemox_control.evaluation import EvaluationResult, ReasonCode, RuleOutcome, RuleResult
 from mnemox_control.state import (
+    HaltState,
     InstrumentCatalog,
     InstrumentType,
     MarketSnapshot,
     PositionMode,
     TrustedAccountSnapshot,
 )
+
+
+class EnforcementClass(StrEnum):
+    ALWAYS = "ALWAYS"
+    NEW_RISK_ONLY = "NEW_RISK_ONLY"
+    NORMAL_PATH_BLOCKER = "NORMAL_PATH_BLOCKER"
+
+
+_NORMAL_PATH_BLOCKERS = frozenset(
+    {ReasonCode.RECONCILE_REQUIRED, ReasonCode.FULL_HALT_ACTIVE}
+)
+_NEW_RISK_ONLY = frozenset(
+    {
+        ReasonCode.OUTSIDE_TRADING_WINDOW,
+        ReasonCode.SOFT_HALT_ACTIVE,
+        ReasonCode.REDUCE_ONLY_MODE,
+        ReasonCode.SYMBOL_NOT_ALLOWED,
+        ReasonCode.SHORT_POSITION_FORBIDDEN,
+        ReasonCode.OPEN_ORDER_LIMIT_EXCEEDED,
+        ReasonCode.ORDER_QUANTITY_EXCEEDED,
+        ReasonCode.ORDER_NOTIONAL_EXCEEDED,
+        ReasonCode.POSITION_NOTIONAL_EXCEEDED,
+        ReasonCode.LEVERAGE_EXCEEDED,
+        ReasonCode.NON_POSITIVE_EQUITY,
+        ReasonCode.DAILY_LOSS_LIMIT_REACHED,
+        ReasonCode.DRAWDOWN_LIMIT_REACHED,
+        ReasonCode.HUMAN_APPROVAL_REQUIRED,
+    }
+)
+_ALWAYS = frozenset(ReasonCode) - _NORMAL_PATH_BLOCKERS - _NEW_RISK_ONLY
+RULE_ENFORCEMENT = {
+    code: (
+        EnforcementClass.NORMAL_PATH_BLOCKER
+        if code in _NORMAL_PATH_BLOCKERS
+        else EnforcementClass.NEW_RISK_ONLY
+        if code in _NEW_RISK_ONLY
+        else EnforcementClass.ALWAYS
+    )
+    for code in ReasonCode
+}
+assert set(RULE_ENFORCEMENT) == set(ReasonCode)
 
 _CALCULATION_BLOCKERS = (
     ReasonCode.UNSEALED_TRUST_INPUT,
@@ -220,6 +268,17 @@ def evaluate(
     if not _is_inside_weekly_window(policy, evaluated_at):
         deny(ReasonCode.OUTSIDE_TRADING_WINDOW)
 
+    if account.halt_state is HaltState.RECONCILE_REQUIRED:
+        deny(ReasonCode.RECONCILE_REQUIRED, actual=account.halt_state.value)
+    if account.halt_state is HaltState.SOFT_HALT:
+        deny(ReasonCode.SOFT_HALT_ACTIVE, actual=account.halt_state.value)
+    if account.halt_state is HaltState.FULL_HALT:
+        deny(ReasonCode.FULL_HALT_ACTIVE, actual=account.halt_state.value)
+    if account.halt_state is HaltState.REDUCE_ONLY:
+        deny(ReasonCode.REDUCE_ONLY_MODE, actual=account.halt_state.value)
+    if intent.symbol not in policy.allowed_symbols:
+        deny(ReasonCode.SYMBOL_NOT_ALLOWED, subjects=(intent.symbol,))
+
     calculation_blockers = tuple(
         code for code in _CALCULATION_BLOCKERS if rules[code].outcome is RuleOutcome.DENY
     )
@@ -259,6 +318,183 @@ def evaluate(
         gross_exposure = metrics.projected_gross_exposure
         leverage = metrics.projected_leverage
         position_effect = metrics.position_effect
+
+        signed_quantity = signed_order_quantity(intent)
+        valid_strict_reducer = (
+            intent.reduce_only
+            and current_quantity != 0
+            and (signed_quantity > 0) != (current_quantity > 0)
+            and abs(proposed_fill) < abs(current_quantity)
+            and (
+                proposed_fill == 0
+                or (proposed_fill > 0) == (current_quantity > 0)
+            )
+        )
+
+        def set_violation(
+            code: ReasonCode,
+            condition: bool,
+            *,
+            actual: Decimal | str | bool | None = None,
+            limit: Decimal | str | bool | None = None,
+            subjects: tuple[str, ...] = (),
+            escalation: bool = False,
+        ) -> None:
+            if not condition:
+                return
+            if (
+                valid_strict_reducer
+                and RULE_ENFORCEMENT[code] is EnforcementClass.NEW_RISK_ONLY
+            ):
+                rules[code] = RuleResult(
+                    code=code,
+                    outcome=RuleOutcome.PASS,
+                    actual=actual,
+                    limit=limit,
+                    subjects=subjects,
+                )
+                return
+            rules[code] = RuleResult(
+                code=code,
+                outcome=RuleOutcome.ESCALATE if escalation else RuleOutcome.DENY,
+                actual=actual,
+                limit=limit,
+                subjects=subjects,
+            )
+
+        # Re-apply the data-driven exemptions to pre-calculation new-risk rules.
+        for code in (
+            ReasonCode.OUTSIDE_TRADING_WINDOW,
+            ReasonCode.SOFT_HALT_ACTIVE,
+            ReasonCode.REDUCE_ONLY_MODE,
+            ReasonCode.SYMBOL_NOT_ALLOWED,
+        ):
+            if (
+                valid_strict_reducer
+                and rules[code].outcome is RuleOutcome.DENY
+                and RULE_ENFORCEMENT[code] is EnforcementClass.NEW_RISK_ONLY
+            ):
+                rules[code] = RuleResult(code=code, outcome=RuleOutcome.PASS)
+
+        declared_price = (
+            intent.limit_price
+            if intent.order_type is OrderType.LIMIT
+            else intent.stop_price
+            if intent.order_type is OrderType.STOP
+            else None
+        )
+        invalid_increment_subjects: list[str] = []
+        if not is_step_aligned(intent.quantity, instrument.quantity_step):
+            invalid_increment_subjects.append("intent.quantity_step")
+        if declared_price is not None and not is_step_aligned(
+            declared_price, instrument.price_tick
+        ):
+            invalid_increment_subjects.append("intent.price_tick")
+        if intent.quantity < instrument.min_quantity:
+            invalid_increment_subjects.append("intent.min_quantity")
+        if order_notional < instrument.min_notional:
+            invalid_increment_subjects.append("intent.min_notional")
+        set_violation(
+            ReasonCode.INVALID_INCREMENT,
+            bool(invalid_increment_subjects),
+            subjects=tuple(invalid_increment_subjects),
+        )
+
+        mark = quote.mark
+        deviation_bps = (
+            (reference - mark) / mark * Decimal(10000)
+            if intent.side is Side.BUY and reference > mark
+            else (mark - reference) / mark * Decimal(10000)
+            if intent.side is Side.SELL and reference < mark
+            else Decimal(0)
+        )
+        set_violation(
+            ReasonCode.PRICE_COLLAR_EXCEEDED,
+            deviation_bps > policy.max_price_deviation_bps,
+            actual=deviation_bps,
+            limit=policy.max_price_deviation_bps,
+        )
+        set_violation(
+            ReasonCode.REDUCE_ONLY_VIOLATION,
+            intent.reduce_only and not valid_strict_reducer,
+            actual=position_effect.value,
+        )
+        set_violation(
+            ReasonCode.REDUCE_ONLY_UNCERTAIN,
+            intent.reduce_only and any(
+                order.symbol == intent.symbol for order in account.open_orders
+            ),
+            subjects=(intent.symbol,),
+        )
+        set_violation(
+            ReasonCode.POSITION_REVERSAL_FORBIDDEN,
+            position_effect.value == "REVERSE" and not policy.allow_position_reversal,
+            actual=position_effect.value,
+            limit=policy.allow_position_reversal,
+        )
+        set_violation(
+            ReasonCode.SHORT_POSITION_FORBIDDEN,
+            proposed_fill < 0 and not instrument.allows_short,
+            actual=proposed_fill,
+            limit=instrument.allows_short,
+        )
+        proposed_open_orders = len(account.open_orders) + 1
+        set_violation(
+            ReasonCode.OPEN_ORDER_LIMIT_EXCEEDED,
+            proposed_open_orders > policy.max_open_orders,
+            actual=Decimal(proposed_open_orders),
+            limit=Decimal(policy.max_open_orders),
+        )
+        set_violation(
+            ReasonCode.ORDER_QUANTITY_EXCEEDED,
+            policy.max_order_quantity is not None
+            and intent.quantity > policy.max_order_quantity,
+            actual=intent.quantity,
+            limit=policy.max_order_quantity,
+        )
+        set_violation(
+            ReasonCode.ORDER_NOTIONAL_EXCEEDED,
+            order_notional > policy.max_order_notional,
+            actual=order_notional,
+            limit=policy.max_order_notional,
+        )
+        set_violation(
+            ReasonCode.POSITION_NOTIONAL_EXCEEDED,
+            worst_notional > policy.max_position_notional,
+            actual=worst_notional,
+            limit=policy.max_position_notional,
+        )
+        set_violation(
+            ReasonCode.LEVERAGE_EXCEEDED,
+            leverage is not None and leverage > policy.max_leverage,
+            actual=leverage,
+            limit=policy.max_leverage,
+        )
+        set_violation(
+            ReasonCode.NON_POSITIVE_EQUITY,
+            account.equity <= 0,
+            actual=account.equity <= 0,
+            limit=False,
+        )
+        set_violation(
+            ReasonCode.DAILY_LOSS_LIMIT_REACHED,
+            account.realized_pnl_today <= -policy.max_daily_loss,
+            actual=account.realized_pnl_today,
+            limit=-policy.max_daily_loss,
+        )
+        set_violation(
+            ReasonCode.DRAWDOWN_LIMIT_REACHED,
+            account.drawdown_from_peak >= policy.max_drawdown,
+            actual=account.drawdown_from_peak,
+            limit=policy.max_drawdown,
+        )
+        set_violation(
+            ReasonCode.HUMAN_APPROVAL_REQUIRED,
+            order_notional >= policy.approval_notional,
+            actual=order_notional,
+            limit=policy.approval_notional,
+            escalation=True,
+        )
 
     ordered_rules = tuple(rules[code] for code in ReasonCode)
     outcomes = {rule.outcome for rule in ordered_rules}

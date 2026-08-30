@@ -35,6 +35,8 @@
 - Opposite pending orders never net, UNKNOWN/non-terminal exposure counts in full, reduce-only orders never reduce capacity, all symbols require catalog/quote coverage, and MARKET orders use adverse bid/ask valuation; 139 tests pass.
 - Evaluation Kernel v0.2 Task 7 is complete: `evaluate()` binds canonical hashes, validates seals and claimed hashes, enforces account/broker bindings, rejects unsupported or uncovered state, and applies exact policy/snapshot/P&L/weekly time boundaries.
 - Preflight denials still emit all 36 ordered rules; calculation-dependent rules use explicit prior-DENY SKIPs and undefined metrics instead of fabricated PASS or partial valuation; 162 tests pass across 7 source files.
+- Evaluation Kernel v0.2 Task 8 is complete: all halt, increment, price-collar, reduce-only, reversal, short, order, position, leverage, equity, loss, drawdown, and approval rules now execute with exact threshold precedence.
+- Every reason code has one explicit `ALWAYS`, `NEW_RISK_ONLY`, or `NORMAL_PATH_BLOCKER` class. Only strict monotonic reducers receive new-risk exemptions; FULL_HALT/RECONCILE and always-enforced integrity/price rules remain non-bypassable; 180 tests pass.
 
 ## Recent Changes
 
@@ -52,3 +54,4 @@
 - 2026-08-30: Added the ordered 36-rule evaluation evidence contract with canonical normalization, dependency validation, worst-outcome decision enforcement, and deterministic content sealing.
 - 2026-08-30: Added signed-position and conservative exposure calculations, typed coverage errors, account-wide non-netted envelopes, and Decimal-only adverse-price valuation.
 - 2026-08-30: Added the pure evaluator preflight for integrity, hash, binding, instrument support, complete coverage, freshness, policy validity, P&L period, and weekly trading windows.
+- 2026-08-30: Completed the data-driven risk-rule matrix, strict reduce-only semantics, hard-limit/approval precedence, halt behavior, and reducer exemptions for the normal evaluator API.
