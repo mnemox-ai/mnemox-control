@@ -27,6 +27,8 @@
 - The shared timestamp validator now rejects naive timestamps even when supplied as strings; 70 tests pass, Ruff passes, and strict mypy passes across 4 source files.
 - Evaluation Kernel v0.2 Task 3 is complete: trusted account snapshots bind a positive state version, signed positions, every non-terminal/UNKNOWN order, P&L period, drawdown, halt state, and deterministic content hash.
 - Account contracts sort evidence by stable keys and reject duplicate position symbols/order IDs, invalid exposure values, invalid P&L windows, bad hashes, unknown fields, and mutation; 82 tests pass.
+- Evaluation Kernel v0.2 Task 4 is complete: `PolicyBundle` now requires protocol 0.2, structural revision linkage, positive risk/freshness limits, price/order/reversal controls, UTC risk-day configuration, and normalized non-overlapping weekly windows.
+- Deterministic evaluator test factories now provide sealed default policy/account/market/catalog inputs and pending-order/intent helpers; 103 tests pass, Ruff and strict mypy pass.
 
 ## Recent Changes
 
@@ -40,3 +42,4 @@
 - 2026-08-30: Established the v0.2 engine/protocol license boundary, added exact SPDX license texts and commercial licensing notice, bumped the package to 0.2.0, and added Hypothesis to dev dependencies.
 - 2026-08-30: Added sealed instrument/catalog and market/quote contracts, including deterministic hash support and known-but-unsupported instrument representation.
 - 2026-08-30: Added trusted account, signed position, pending-order exposure, order-status, and halt-state contracts with conservative UNKNOWN-order representation.
+- 2026-08-30: Migrated `PolicyBundle` from v0.1 to v0.2 and added revision lineage, freshness, execution-shape, risk-day, weekly-window controls, and deterministic shared test factories.

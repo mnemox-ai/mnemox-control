@@ -8,6 +8,7 @@ from mnemox_control.contracts import (
     OrderType,
     PolicyBundle,
     Side,
+    WeeklyWindow,
 )
 from mnemox_control.state import (
     HaltState,
@@ -41,6 +42,7 @@ __all__ = [
     "PositionMode",
     "Side",
     "TrustedAccountSnapshot",
+    "WeeklyWindow",
     "canonical_json_bytes",
     "content_sha256",
 ]

@@ -50,21 +50,45 @@ class StrictFrozenModel(BaseModel):
         return value
 
 
+class WeeklyWindow(StrictFrozenModel):
+    """Half-open allowed interval expressed as minutes in a UTC week."""
+
+    start_minute_utc: Annotated[int, Field(ge=0, lt=10080)]
+    end_minute_utc: Annotated[int, Field(gt=0, le=10080)]
+
+    @model_validator(mode="after")
+    def validate_non_empty(self) -> Self:
+        if self.start_minute_utc >= self.end_minute_utc:
+            raise ValueError("weekly window start must be earlier than end")
+        return self
+
+
 class PolicyBundle(StrictFrozenModel):
     """Owner-defined limits that govern an account for a fixed time window."""
 
     policy_id: UUID
-    version: Literal["0.1"] = "0.1"
+    version: Literal["0.2"] = "0.2"
+    revision: Annotated[int, Field(ge=1)]
+    previous_policy_hash: str | None = None
     owner_id: NonBlankStr
     account_id: NonBlankStr
     broker: NonBlankStr
     allowed_symbols: tuple[str, ...]
-    max_order_notional: NonNegativeDecimal
-    max_position_notional: NonNegativeDecimal
+    max_order_notional: PositiveDecimal
+    max_position_notional: PositiveDecimal
     max_leverage: Annotated[Decimal, Field(ge=1)]
-    max_daily_loss: NonNegativeDecimal
-    max_drawdown: NonNegativeDecimal
+    max_daily_loss: PositiveDecimal
+    max_drawdown: PositiveDecimal
     approval_notional: NonNegativeDecimal
+    max_state_age_seconds: Annotated[int, Field(gt=0)]
+    max_market_age_seconds: Annotated[int, Field(gt=0)]
+    max_instrument_age_seconds: Annotated[int, Field(gt=0)]
+    max_price_deviation_bps: NonNegativeDecimal
+    max_open_orders: Annotated[int, Field(ge=0)]
+    max_order_quantity: PositiveDecimal | None
+    allow_position_reversal: bool
+    risk_day_start_hour_utc: Annotated[int, Field(ge=0, le=23)]
+    allowed_weekly_windows: Annotated[tuple[WeeklyWindow, ...], Field(min_length=1)]
     valid_from: datetime
     expires_at: datetime
     created_at: datetime
@@ -80,7 +104,14 @@ class PolicyBundle(StrictFrozenModel):
             raise ValueError("allowed_symbols must not be empty")
         return symbols
 
-    @field_validator("content_hash")
+    @field_validator("allowed_weekly_windows", mode="after")
+    @classmethod
+    def sort_weekly_windows(
+        cls, value: tuple[WeeklyWindow, ...]
+    ) -> tuple[WeeklyWindow, ...]:
+        return tuple(sorted(value, key=lambda window: window.start_minute_utc))
+
+    @field_validator("previous_policy_hash", "content_hash")
     @classmethod
     def validate_content_hash(cls, value: str | None) -> str | None:
         if value is not None and not _HASH_PATTERN.fullmatch(value):
@@ -89,12 +120,23 @@ class PolicyBundle(StrictFrozenModel):
 
     @model_validator(mode="after")
     def validate_policy_window(self) -> Self:
+        if self.revision == 1 and self.previous_policy_hash is not None:
+            raise ValueError("previous_policy_hash must be absent on revision 1")
+        if self.revision > 1 and self.previous_policy_hash is None:
+            raise ValueError("previous_policy_hash is required after revision 1")
         if self.approval_notional > self.max_order_notional:
             raise ValueError("approval_notional cannot exceed max_order_notional")
         if self.valid_from >= self.expires_at:
             raise ValueError("expires_at must be later than valid_from")
         if self.created_at > self.valid_from:
             raise ValueError("created_at cannot be later than valid_from")
+        for previous, current in zip(
+            self.allowed_weekly_windows,
+            self.allowed_weekly_windows[1:],
+            strict=False,
+        ):
+            if current.start_minute_utc < previous.end_minute_utc:
+                raise ValueError("allowed_weekly_windows cannot overlap")
         return self
 
     def with_content_hash(self) -> Self:
