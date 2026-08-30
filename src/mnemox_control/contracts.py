@@ -154,3 +154,63 @@ class OrderIntent(StrictFrozenModel):
             if self.limit_price is not None:
                 raise ValueError("STOP orders cannot carry limit_price")
         return self
+
+
+class Decision(StrEnum):
+    ALLOW = "ALLOW"
+    DENY = "DENY"
+    ESCALATE = "ESCALATE"
+
+
+class DecisionReceipt(StrictFrozenModel):
+    """Policy decision and evidence references for one order intent."""
+
+    receipt_id: UUID
+    intent_id: UUID
+    policy_id: UUID
+    policy_hash: str
+    decision: Decision
+    reason_codes: tuple[str, ...] = ()
+    evaluated_at: datetime
+    order_intent_hash: str
+    broker_order_id: str | None = None
+    previous_receipt_hash: str | None = None
+    content_hash: str | None = None
+
+    @field_validator("reason_codes", mode="before")
+    @classmethod
+    def normalize_reason_codes(cls, value: object) -> tuple[str, ...]:
+        if isinstance(value, str) or not isinstance(value, (list, tuple, set)):
+            raise ValueError("reason_codes must be a collection")
+        return tuple(sorted({_non_blank(str(item)).upper() for item in value}))
+
+    @field_validator(
+        "policy_hash",
+        "order_intent_hash",
+        "previous_receipt_hash",
+        "content_hash",
+    )
+    @classmethod
+    def validate_hash(cls, value: str | None) -> str | None:
+        if value is not None and not _HASH_PATTERN.fullmatch(value):
+            raise ValueError("hash must be 64 lowercase hexadecimal characters")
+        return value
+
+    @field_validator("broker_order_id")
+    @classmethod
+    def normalize_broker_order_id(cls, value: str | None) -> str | None:
+        return _non_blank(value) if value is not None else None
+
+    @model_validator(mode="after")
+    def validate_decision_shape(self) -> Self:
+        if self.decision in {Decision.DENY, Decision.ESCALATE}:
+            if not self.reason_codes:
+                raise ValueError("reason_codes are required for DENY or ESCALATE")
+            if self.broker_order_id is not None:
+                raise ValueError("broker_order_id is forbidden for DENY or ESCALATE")
+        return self
+
+    def with_content_hash(self) -> Self:
+        """Return a copy carrying the digest of its unhashed wire content."""
+        digest = content_sha256(self, exclude={"content_hash"})
+        return self.model_copy(update={"content_hash": digest})

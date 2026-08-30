@@ -11,14 +11,16 @@
 
 ## Current Status
 
-- Contracts v0.1 implementation is in progress on `feat/contracts-v0.1` at commit `e7f3eea`.
+- Contracts v0.1 implementation is in progress on `feat/contracts-v0.1`.
 - Canonical JSON and SHA-256 helpers are implemented with 4 focused tests passing under the temporary Python 3.11 development runner; final verification must use Python 3.12.
 - Immutable `PolicyBundle` is implemented through observed red-green TDD; canonical + policy tests total 13 passing under the temporary runner.
 - `OrderIntent` is implemented through observed red-green TDD with strict MARKET/LIMIT/STOP price shapes; total focused tests are 27 passing under the temporary runner.
-- Next: implement `DecisionReceipt` through red-green TDD.
+- `DecisionReceipt` is implemented through observed red-green TDD with immutable audit links, decision invariants, and canonical content hashing; all 50 focused tests pass under the temporary runner.
+- Next: document the trust boundary and run the full Python 3.12 quality gate.
 
 ## Recent Changes
 
 - 2026-08-30: Added contracts v0.1 design, implementation plan, task file, package metadata, deterministic canonical serialization, and SHA-256 content hashing.
 - 2026-08-30: Added strict frozen contract base and `PolicyBundle` normalization, cross-field validation, UTC handling, and content hashing.
 - 2026-08-30: Added `OrderIntent`, `Side`, and `OrderType` contracts with positive quantity/price validation and exact order-type price invariants.
+- 2026-08-30: Added `DecisionReceipt` and `Decision` contracts with reason-code normalization, hash-chain support, and broker-order safety invariants.
