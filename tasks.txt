@@ -1,6 +1,11 @@
-# Execute only after reading docs/superpowers/specs/2026-08-30-contracts-v0.1-design.md and docs/superpowers/plans/2026-08-30-contracts-v0.1.md.
-Implement Task 1 using strict red-green TDD: project skeleton plus deterministic canonical JSON and SHA-256 helpers. Work in C:/Users/User/projects/mnemox-control.
-Implement Task 2 using strict red-green TDD: immutable PolicyBundle v0.1, normalization, cross-field validation, and known hash fixture.
-Implement Task 3 using strict red-green TDD: OrderIntent with MARKET/LIMIT/STOP semantics and strict identity/quantity validation.
-Implement Task 4 using strict red-green TDD: DecisionReceipt with reason/hash/broker-order invariants and deterministic content hash.
-Complete Task 5: README, AGENTS.md, full pytest/Ruff/mypy/build verification, scoped commits, and push if an origin remote exists.
+# Read docs/superpowers/specs/2026-08-30-evaluation-kernel-v0.2-design.md and docs/superpowers/plans/2026-08-30-evaluation-kernel-v0.2.md before every task. Work only in C:/Users/User/projects/mnemox-control on feat/evaluation-kernel-v0.2. Use strict observed RED → minimal GREEN → full suite → scoped commit. Never add broker credentials, network calls, storage, randomness, or live execution.
+Execute Task 1: establish the AGPL engine / Apache protocol distribution boundary, package version 0.2.0, Hypothesis dependency, exact license files, and distribution-policy tests.
+Execute Task 2: add InstrumentSpec, InstrumentCatalog, MarketQuote, and MarketSnapshot contracts with known unsupported wire vocabulary, uniqueness, normalization, sealing, and focused tests.
+Execute Task 3: add Position, OpenOrderExposure, HaltState, and TrustedAccountSnapshot contracts with signed positions, pending exposure, P&L windows, uniqueness, sealing, and focused tests.
+Execute Task 4: upgrade PolicyBundle to protocol v0.2 with revision linkage, freshness, price/order limits, reversal policy, risk-day reset, weekly windows, explicit migration tests, and updated factories.
+Execute Task 5: add the 36-code reason taxonomy, RuleResult evidence semantics, PositionEffect, and EvaluationResult with ordered rule coverage, SKIP dependency validation, lookup, sealing, and focused tests.
+Execute Task 6: implement pure Decimal signed-position, adverse reference price, exact increment, short/reversal, and multi-symbol worst-case exposure calculations where opposite pending orders never net and missing coverage is typed.
+Execute Task 7: implement evaluate() preflight for trust hashes, bindings, supported semantics, complete valuation coverage, freshness, P&L windows, weekly windows, dependent SKIPs, and one fully bound deterministic ALLOW result.
+Execute Task 8: implement all risk rules, data-driven reduce-only exemptions, normal-path blockers, stable ordered evidence, hard-deny precedence, and focused long/short/halt/limit tests.
+Execute Task 9: add Hypothesis invariant tests, two byte-exact Apache conformance vectors, protocol documentation, README safe-use example, and v0.1 DecisionReceipt migration guidance.
+Execute Task 10: run fresh Python 3.12 pytest/Ruff/strict-mypy/build gates, inspect wheel contents and AGPL metadata, audit every spec success criterion, update AGENTS.md/tasks.txt, commit, and push only if origin exists.

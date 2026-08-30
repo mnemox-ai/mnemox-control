@@ -164,7 +164,8 @@ These invariants are normative for the target architecture. v0.2 implements the 
 
 ## Supported Trading Semantics
 
-v0.2 supports exactly:
+The wire vocabulary recognizes `SPOT`, `LINEAR_PERPETUAL`, `INVERSE_PERPETUAL`, `FUTURE`, and
+`OPTION`, plus `ONE_WAY` and `HEDGE` position modes. v0.2 evaluation supports exactly:
 
 - `SPOT` with signed base-asset quantity represented in one net position.
 - `LINEAR_PERPETUAL` with `ONE_WAY` position mode and linear quote-currency notional.
@@ -194,8 +195,8 @@ Fields:
 - `version: str`
 - `broker: str`
 - `symbol: str`
-- `instrument_type: SPOT | LINEAR_PERPETUAL`
-- `position_mode: ONE_WAY`
+- `instrument_type: SPOT | LINEAR_PERPETUAL | INVERSE_PERPETUAL | FUTURE | OPTION`
+- `position_mode: ONE_WAY | HEDGE`
 - `allows_short: bool`
 - `base_asset: str`
 - `quote_asset: str`
@@ -226,9 +227,10 @@ Fields:
 - `content_hash: str | None`
 
 Symbols and instrument IDs are unique. Every position, non-terminal order, and proposed intent
-must resolve to exactly one supported specification. `SPOT` normally sets `allows_short=False`;
-`LINEAR_PERPETUAL` may allow short exposure. A projected negative position on an instrument that
-forbids shorts is DENY.
+must resolve to exactly one specification. A recognized but unsupported type or mode resolves
+successfully and then emits `UNSUPPORTED_INSTRUMENT`; a completely unknown wire enum remains a
+schema error. `SPOT` normally sets `allows_short=False`; `LINEAR_PERPETUAL` may allow short
+exposure. A projected negative position on an instrument that forbids shorts is DENY.
 
 ### `Position`
 
