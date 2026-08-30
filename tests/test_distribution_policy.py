@@ -11,6 +11,7 @@ def test_engine_and_protocol_have_distinct_license_boundaries() -> None:
     assert project["version"] == "0.2.0"
     assert (ROOT / "LICENSES" / "AGPL-3.0.txt").is_file()
     assert (ROOT / "LICENSES" / "Apache-2.0.txt").is_file()
+    assert project["license-files"] == ["LICENSE", "LICENSES/AGPL-3.0.txt"]
     protocol_notice = (ROOT / "docs" / "protocol" / "LICENSE").read_text(encoding="utf-8")
     assert "Apache License" in protocol_notice
 

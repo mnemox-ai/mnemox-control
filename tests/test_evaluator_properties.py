@@ -128,3 +128,48 @@ def test_deny_precedence_is_invariant_when_approval_also_triggers(quantity: Deci
     assert result.rule("ORDER_NOTIONAL_EXCEEDED").outcome is RuleOutcome.DENY
     assert result.rule("HUMAN_APPROVAL_REQUIRED").outcome is RuleOutcome.ESCALATE
     assert result.decision is Decision.DENY
+
+
+@given(
+    target=st.sampled_from(
+        ("policy", "intent", "account", "market", "instruments", "evaluated_at")
+    )
+)
+def test_mutating_any_bound_input_changes_result_hash(target: str) -> None:
+    inputs = valid_inputs()
+    baseline = evaluate(**inputs.as_kwargs())
+    if target == "evaluated_at":
+        changed_inputs = inputs.replace(evaluated_at=inputs.evaluated_at + timedelta(seconds=1))
+    else:
+        model = getattr(inputs, target)
+        field, value = {
+            "policy": ("owner_id", "owner-2"),
+            "intent": ("reason", "changed deterministic reason"),
+            "account": ("cash_balance", Decimal("9999")),
+            "market": ("source", "alternate-market-source"),
+            "instruments": ("version", "2026-08-30-r2"),
+        }[target]
+        changed = model.model_copy(update={field: value})
+        if target != "intent":
+            changed = changed.model_copy(update={"content_hash": None}).with_content_hash()
+        changed_inputs = inputs.replace(**{target: changed})
+
+    changed_result = evaluate(**changed_inputs.as_kwargs())
+
+    assert changed_result.content_hash != baseline.content_hash
+
+
+@given(order=st.permutations(("BTCUSDT", "ETHUSDT", "SOLUSDT")))
+def test_normalized_collection_order_does_not_change_output(order: list[str]) -> None:
+    inputs = valid_inputs()
+    first_data = inputs.policy.model_dump()
+    first_data.update(allowed_symbols=order, content_hash=None)
+    second_data = inputs.policy.model_dump()
+    second_data.update(allowed_symbols=tuple(reversed(order)), content_hash=None)
+    first_policy = inputs.policy.__class__.model_validate(first_data).with_content_hash()
+    second_policy = inputs.policy.__class__.model_validate(second_data).with_content_hash()
+
+    first = evaluate(**inputs.replace(policy=first_policy).as_kwargs())
+    second = evaluate(**inputs.replace(policy=second_policy).as_kwargs())
+
+    assert canonical_json_bytes(first) == canonical_json_bytes(second)

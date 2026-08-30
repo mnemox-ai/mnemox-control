@@ -9,6 +9,7 @@ description = "Deterministic risk-control and decision-evidence contracts for ag
 readme = "README.md"
 requires-python = ">=3.12"
 license = "AGPL-3.0-only"
+license-files = ["LICENSE", "LICENSES/AGPL-3.0.txt"]
 dependencies = ["pydantic>=2.12,<3"]
 
 [project.optional-dependencies]

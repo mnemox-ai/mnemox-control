@@ -14,7 +14,13 @@ from mnemox_control.calculations import (
 )
 from mnemox_control.contracts import OrderIntent
 from mnemox_control.evaluation import PositionEffect
-from mnemox_control.state import InstrumentCatalog, InstrumentSpec, MarketQuote, MarketSnapshot
+from mnemox_control.state import (
+    InstrumentCatalog,
+    InstrumentSpec,
+    MarketQuote,
+    MarketSnapshot,
+    OpenOrderStatus,
+)
 from tests.factories import buy, buy_intent, catalog_btc, market_btc, sell
 
 
@@ -212,3 +218,20 @@ def test_non_positive_equity_leaves_only_leverage_undefined() -> None:
     assert metrics.projected_gross_exposure == Decimal("101")
     assert metrics.projected_leverage is None
     assert all(not isinstance(value, float) for value in metrics.__dict__.values())
+
+
+@pytest.mark.parametrize("status", list(OpenOrderStatus))
+def test_every_non_terminal_order_status_counts_in_full(status: OpenOrderStatus) -> None:
+    pending = buy("BTCUSDT", "1").model_copy(update={"status": status})
+
+    metrics = build_exposure_metrics(
+        current={},
+        pending=(pending,),
+        proposed=buy_intent("BTCUSDT", "1"),
+        catalog=catalog_btc(),
+        market=market_btc(),
+        equity=Decimal("1000"),
+    )
+
+    assert metrics.worst_case_position_quantities["BTCUSDT"] == Decimal("2")
+    assert metrics.projected_gross_exposure == Decimal("202")

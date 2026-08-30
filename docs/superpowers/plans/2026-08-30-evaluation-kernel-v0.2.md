@@ -1,5 +1,8 @@
 # Mnemox Evaluation Kernel v0.2 Implementation Plan
 
+**Status:** COMPLETE on `feat/evaluation-kernel-v0.2` (2026-08-30). The unchecked step boxes
+below are preserved as the original execution recipe; the audited completion record is appended.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development
 > (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use
 > checkbox (`- [ ]`) syntax for tracking.
@@ -967,3 +970,22 @@ Run: `git remote -v`
 
 If `origin` exists, run `git push -u origin feat/evaluation-kernel-v0.2`. If it does not exist,
 record that exact blocker in `AGENTS.md` and preserve the branch locally.
+
+---
+
+## Audited Completion Record
+
+- [x] Task 1 — AGPL engine / Apache protocol distribution boundary and package 0.2.0.
+- [x] Task 2 — sealed instrument catalog and complete market-state contracts.
+- [x] Task 3 — trusted account, signed position, halt, and pending-exposure contracts.
+- [x] Task 4 — PolicyBundle v0.2 revision, freshness, order, risk-day, and weekly controls.
+- [x] Task 5 — 36-code ordered rule evidence and canonical EvaluationResult.
+- [x] Task 6 — Decimal signed-position and non-netted account-wide exposure calculations.
+- [x] Task 7 — seal, hash, binding, coverage, support, and temporal evaluator preflight.
+- [x] Task 8 — complete risk rules, precedence, and data-driven reducer exemptions.
+- [x] Task 9 — Hypothesis invariants, byte-exact conformance vectors, and protocol docs.
+- [x] Task 10 — Python 3.12 pytest/Ruff/strict-mypy/build/wheel/spec release audit.
+
+Release evidence: Python 3.12.13; 193 tests; Ruff clean; strict mypy clean across 7 source files;
+sdist and wheel build; wheel contains only the 7 intended engine modules, metadata, wheel record,
+root license map, and complete AGPL-3.0 text. `origin` is not configured, so push remains pending.

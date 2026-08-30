@@ -39,6 +39,11 @@
 - Every reason code has one explicit `ALWAYS`, `NEW_RISK_ONLY`, or `NORMAL_PATH_BLOCKER` class. Only strict monotonic reducers receive new-risk exemptions; FULL_HALT/RECONCILE and always-enforced integrity/price rules remain non-bypassable; 180 tests pass.
 - Evaluation Kernel v0.2 Task 9 is complete: Hypothesis proves risk/pending monotonicity, strict reduction, deterministic bytes, hash sensitivity, precedence, and input immutability across bounded Decimal strategies.
 - Apache-licensed `basic-allow` and `multi-deny` vectors bind full inputs, complete results, canonical JSON, and hashes byte-for-byte. The public protocol/README now document equations, 36-rule order, enforcement classes, licensing, migration, and the non-execution boundary; 187 tests pass.
+- Evaluation Kernel v0.2 implementation and release audit are complete on `feat/evaluation-kernel-v0.2`: Python 3.12.13, 193 tests, Ruff clean, strict mypy clean across 7 source files, and sdist/wheel build cleanly.
+- Wheel inspection confirms version 0.2.0, Python >=3.12, `AGPL-3.0-only`, exactly 7 intended engine modules, and both the root license map and complete AGPL-3.0 text; Apache protocol assets remain outside the engine wheel.
+- Success criteria audit: realistic sealed paper inputs produce replayable bound results; tests cover direction/pending/freshness/binding/halt/limits/escalation/fail-safe behavior; vectors reproduce bytes/hashes; docs forbid treating ALLOW as authorization; source scan finds no time/random/network/storage/credential reads; future reservation/reconciliation seams are explicit without changing evaluation semantics.
+- Explicitly deferred PEP/evidence work: issuer signatures and key storage, policy registry/revocation/minimum revision, atomic reservation, single-use `AuthorizationGrant`, idempotent broker submission, credentials/networking, execution persistence/receipts, UNKNOWN reconciliation/watchdog, emergency-flatten authorization, authorization-coverage proof, transparency log, and certification service.
+- Git push remains blocked because this repository has no configured `origin`; all commits are preserved locally on `feat/evaluation-kernel-v0.2`.
 
 ## Recent Changes
 
@@ -58,3 +63,4 @@
 - 2026-08-30: Added the pure evaluator preflight for integrity, hash, binding, instrument support, complete coverage, freshness, policy validity, P&L period, and weekly trading windows.
 - 2026-08-30: Completed the data-driven risk-rule matrix, strict reduce-only semantics, hard-limit/approval precedence, halt behavior, and reducer exemptions for the normal evaluator API.
 - 2026-08-30: Published protocol v0.2 documentation and two conformance vectors, added Hypothesis invariant tests and a reviewed vector generator, and deprecated v0.1 `DecisionReceipt` for new integrations.
+- 2026-08-30: Completed the Python 3.12 release gate, fixed wheel inclusion of the complete AGPL text, expanded bound-input/status property evidence, audited all six spec success criteria, and recorded every deferred PEP capability.
