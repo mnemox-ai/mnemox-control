@@ -31,6 +31,8 @@
 - Deterministic evaluator test factories now provide sealed default policy/account/market/catalog inputs and pending-order/intent helpers; 103 tests pass, Ruff and strict mypy pass.
 - Evaluation Kernel v0.2 Task 5 is complete: the exact 36-code protocol order, rule outcomes, position effects, structured `RuleResult`, and proof-carrying `EvaluationResult` are implemented.
 - Result validation prevents missing/duplicate rules, false PASS through SKIP, non-prior/non-DENY dependencies, decision-precedence mismatch, unjustified undefined metrics, bad hashes, and mutable evidence; 115 tests pass.
+- Evaluation Kernel v0.2 Task 6 is complete: pure Decimal helpers classify signed position effects, select adverse executable prices, validate exact increments, and calculate immutable account-wide worst-case exposure envelopes.
+- Opposite pending orders never net, UNKNOWN/non-terminal exposure counts in full, reduce-only orders never reduce capacity, all symbols require catalog/quote coverage, and MARKET orders use adverse bid/ask valuation; 139 tests pass.
 
 ## Recent Changes
 
@@ -46,3 +48,4 @@
 - 2026-08-30: Added trusted account, signed position, pending-order exposure, order-status, and halt-state contracts with conservative UNKNOWN-order representation.
 - 2026-08-30: Migrated `PolicyBundle` from v0.1 to v0.2 and added revision lineage, freshness, execution-shape, risk-day, weekly-window controls, and deterministic shared test factories.
 - 2026-08-30: Added the ordered 36-rule evaluation evidence contract with canonical normalization, dependency validation, worst-outcome decision enforcement, and deterministic content sealing.
+- 2026-08-30: Added signed-position and conservative exposure calculations, typed coverage errors, account-wide non-netted envelopes, and Decimal-only adverse-price valuation.
