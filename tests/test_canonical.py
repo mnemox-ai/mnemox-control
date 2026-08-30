@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta, timezone
 from decimal import Decimal
 
 import pytest
@@ -40,10 +40,13 @@ def test_canonical_json_is_independent_of_model_field_order() -> None:
 def test_content_sha256_is_known_lowercase_digest() -> None:
     fixture = Fixture(
         amount=Decimal("10.5"),
-        occurred_at=datetime(2026, 8, 30, 8, tzinfo=timezone.utc),
+        occurred_at=datetime(2026, 8, 30, 8, tzinfo=UTC),
     )
 
-    assert content_sha256(fixture) == "3f8cb9ccff1cadd57ee0838c0ba030ba527648b678bc56aab793248fbe4cbba0"
+    assert (
+        content_sha256(fixture)
+        == "3f8cb9ccff1cadd57ee0838c0ba030ba527648b678bc56aab793248fbe4cbba0"
+    )
 
 
 def test_canonical_json_rejects_naive_datetime() -> None:

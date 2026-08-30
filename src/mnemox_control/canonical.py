@@ -5,7 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 from collections.abc import Mapping, Sequence
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from decimal import Decimal
 from enum import Enum
 from typing import Any
@@ -24,7 +24,7 @@ def _decimal_string(value: Decimal) -> str:
 def _datetime_string(value: datetime) -> str:
     if value.tzinfo is None or value.utcoffset() is None:
         raise ValueError("canonical timestamps must be timezone-aware")
-    utc_value = value.astimezone(timezone.utc)
+    utc_value = value.astimezone(UTC)
     timespec = "microseconds" if utc_value.microsecond else "seconds"
     rendered = utc_value.isoformat(timespec=timespec)
     if utc_value.microsecond:

@@ -39,9 +39,14 @@ class Fixture(BaseModel):
     amount: Decimal
     occurred_at: datetime
 
+
 def test_canonical_json_normalizes_decimal_and_utc_timestamp() -> None:
-    fixture = Fixture(amount=Decimal("10.5000"), occurred_at=datetime(2026, 8, 30, 8, tzinfo=timezone.utc))
-    assert canonical_json_bytes(fixture) == b'{"amount":"10.5","occurred_at":"2026-08-30T08:00:00Z"}'
+    fixture = Fixture(
+        amount=Decimal("10.5000"), occurred_at=datetime(2026, 8, 30, 8, tzinfo=timezone.utc)
+    )
+    assert (
+        canonical_json_bytes(fixture) == b'{"amount":"10.5","occurred_at":"2026-08-30T08:00:00Z"}'
+    )
 ```
 
 - [ ] **Step 2: Run `python -m pytest tests/test_canonical.py -q` and confirm import failure**
@@ -52,7 +57,9 @@ def test_canonical_json_normalizes_decimal_and_utc_timestamp() -> None:
 def canonical_json_bytes(model: BaseModel, *, exclude: set[str] | None = None) -> bytes:
     data = model.model_dump(mode="python", exclude=exclude or set())
     normalized = _normalize(data)
-    return json.dumps(normalized, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+    return json.dumps(normalized, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode(
+        "utf-8"
+    )
 ```
 
 - [ ] **Step 4: Run canonical tests and confirm they pass**
@@ -71,12 +78,15 @@ def canonical_json_bytes(model: BaseModel, *, exclude: set[str] | None = None) -
 - [ ] **Step 1: Write failing tests for normalization, validation, immutability, and content hashing**
 
 ```python
-def test_policy_normalizes_symbols_and_hashes_without_mutation(valid_policy_data: dict[str, object]) -> None:
+def test_policy_normalizes_symbols_and_hashes_without_mutation(
+    valid_policy_data: dict[str, object],
+) -> None:
     policy = PolicyBundle(**valid_policy_data, allowed_symbols=(" btcusdt ", "ETHUSDT", "BTCUSDT"))
     hashed = policy.with_content_hash()
     assert policy.allowed_symbols == ("BTCUSDT", "ETHUSDT")
     assert policy.content_hash is None
     assert hashed.content_hash == content_sha256(policy, exclude={"content_hash"})
+
 
 def test_policy_rejects_approval_above_order_limit(valid_policy_data: dict[str, object]) -> None:
     valid_policy_data["approval_notional"] = Decimal("1001")
@@ -106,10 +116,12 @@ def test_limit_order_requires_limit_price(valid_intent_data: dict[str, object]) 
     with pytest.raises(ValidationError, match="limit_price"):
         OrderIntent(**valid_intent_data)
 
+
 def test_market_order_rejects_price_fields(valid_intent_data: dict[str, object]) -> None:
     valid_intent_data["limit_price"] = Decimal("100")
     with pytest.raises(ValidationError, match="MARKET"):
         OrderIntent(**valid_intent_data)
+
 
 def test_order_intent_hash_is_stable(valid_intent_data: dict[str, object]) -> None:
     left = OrderIntent(**valid_intent_data)
@@ -135,15 +147,21 @@ def test_order_intent_hash_is_stable(valid_intent_data: dict[str, object]) -> No
 - [ ] **Step 1: Write failing tests for hash format, reason normalization, deny/escalate broker-ID prohibition, allow behavior, immutability, and content hashing**
 
 ```python
-def test_deny_receipt_normalizes_reasons_and_disallows_broker_order(valid_receipt_data: dict[str, object]) -> None:
-    valid_receipt_data.update(decision="DENY", reason_codes=(" leverage_limit ", "LEVERAGE_LIMIT"), broker_order_id="123")
+def test_deny_receipt_normalizes_reasons_and_disallows_broker_order(
+    valid_receipt_data: dict[str, object],
+) -> None:
+    valid_receipt_data.update(
+        decision="DENY", reason_codes=(" leverage_limit ", "LEVERAGE_LIMIT"), broker_order_id="123"
+    )
     with pytest.raises(ValidationError, match="broker_order_id"):
         DecisionReceipt(**valid_receipt_data)
+
 
 def test_deny_requires_reason_code(valid_receipt_data: dict[str, object]) -> None:
     valid_receipt_data.update(decision="DENY", reason_codes=())
     with pytest.raises(ValidationError, match="reason_codes"):
         DecisionReceipt(**valid_receipt_data)
+
 
 def test_receipt_hash_excludes_content_hash(valid_receipt_data: dict[str, object]) -> None:
     receipt = DecisionReceipt(**valid_receipt_data)

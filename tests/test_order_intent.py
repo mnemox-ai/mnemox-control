@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from decimal import Decimal
 from uuid import UUID
 
@@ -24,8 +24,8 @@ def valid_intent_data() -> dict[str, object]:
         "reduce_only": False,
         "strategy_id": "strategy-1",
         "reason": "Trend and risk gates passed",
-        "market_data_as_of": datetime(2026, 8, 30, 8, tzinfo=timezone.utc),
-        "created_at": datetime(2026, 8, 30, 8, 0, 1, tzinfo=timezone.utc),
+        "market_data_as_of": datetime(2026, 8, 30, 8, tzinfo=UTC),
+        "created_at": datetime(2026, 8, 30, 8, 0, 1, tzinfo=UTC),
     }
 
 

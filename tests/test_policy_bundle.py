@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta, timezone
 from decimal import Decimal
 from uuid import UUID
 
@@ -23,9 +23,9 @@ def valid_policy_data() -> dict[str, object]:
         "max_daily_loss": Decimal("100"),
         "max_drawdown": Decimal("500"),
         "approval_notional": Decimal("750"),
-        "created_at": datetime(2026, 8, 30, 7, tzinfo=timezone.utc),
+        "created_at": datetime(2026, 8, 30, 7, tzinfo=UTC),
         "valid_from": datetime(2026, 8, 30, 16, tzinfo=timezone(timedelta(hours=8))),
-        "expires_at": datetime(2026, 9, 30, 8, tzinfo=timezone.utc),
+        "expires_at": datetime(2026, 9, 30, 8, tzinfo=UTC),
     }
 
 
@@ -37,7 +37,7 @@ def test_policy_normalizes_symbols_timestamps_and_hashes_without_mutation() -> N
     hashed = policy.with_content_hash()
 
     assert policy.allowed_symbols == ("BTCUSDT", "ETHUSDT")
-    assert policy.valid_from == datetime(2026, 8, 30, 8, tzinfo=timezone.utc)
+    assert policy.valid_from == datetime(2026, 8, 30, 8, tzinfo=UTC)
     assert policy.content_hash is None
     assert hashed.content_hash == content_sha256(policy, exclude={"content_hash"})
 

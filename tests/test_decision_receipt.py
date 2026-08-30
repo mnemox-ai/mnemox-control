@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from uuid import UUID
 
 import pytest
@@ -18,7 +18,7 @@ def valid_receipt_data() -> dict[str, object]:
         "policy_hash": VALID_HASH,
         "decision": "ALLOW",
         "reason_codes": (),
-        "evaluated_at": datetime(2026, 8, 30, 8, 0, 2, tzinfo=timezone.utc),
+        "evaluated_at": datetime(2026, 8, 30, 8, 0, 2, tzinfo=UTC),
         "order_intent_hash": "b" * 64,
         "broker_order_id": "broker-order-123",
         "previous_receipt_hash": None,
