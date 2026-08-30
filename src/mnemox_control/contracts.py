@@ -5,6 +5,7 @@ from __future__ import annotations
 import re
 from datetime import datetime, timezone
 from decimal import Decimal
+from enum import StrEnum
 from typing import Annotated, Literal, Self
 from uuid import UUID
 
@@ -31,6 +32,7 @@ def _non_blank(value: str) -> str:
 
 NonBlankStr = Annotated[str, AfterValidator(_non_blank)]
 NonNegativeDecimal = Annotated[Decimal, Field(ge=0)]
+PositiveDecimal = Annotated[Decimal, Field(gt=0)]
 
 
 class StrictFrozenModel(BaseModel):
@@ -99,3 +101,56 @@ class PolicyBundle(StrictFrozenModel):
         """Return a copy carrying the digest of its unhashed wire content."""
         digest = content_sha256(self, exclude={"content_hash"})
         return self.model_copy(update={"content_hash": digest})
+
+
+class Side(StrEnum):
+    BUY = "BUY"
+    SELL = "SELL"
+
+
+class OrderType(StrEnum):
+    MARKET = "MARKET"
+    LIMIT = "LIMIT"
+    STOP = "STOP"
+
+
+class OrderIntent(StrictFrozenModel):
+    """An order proposed by an agent before policy evaluation."""
+
+    intent_id: UUID
+    agent_id: NonBlankStr
+    account_id: NonBlankStr
+    broker: NonBlankStr
+    symbol: NonBlankStr
+    side: Side
+    order_type: OrderType
+    quantity: PositiveDecimal
+    limit_price: PositiveDecimal | None = None
+    stop_price: PositiveDecimal | None = None
+    reduce_only: bool = False
+    strategy_id: NonBlankStr
+    reason: NonBlankStr
+    market_data_as_of: datetime
+    created_at: datetime
+
+    @field_validator("symbol", mode="after")
+    @classmethod
+    def uppercase_symbol(cls, value: str) -> str:
+        return value.upper()
+
+    @model_validator(mode="after")
+    def validate_price_shape(self) -> Self:
+        if self.order_type is OrderType.MARKET:
+            if self.limit_price is not None or self.stop_price is not None:
+                raise ValueError("MARKET orders cannot carry limit_price or stop_price")
+        elif self.order_type is OrderType.LIMIT:
+            if self.limit_price is None:
+                raise ValueError("LIMIT orders require limit_price")
+            if self.stop_price is not None:
+                raise ValueError("LIMIT orders cannot carry stop_price")
+        elif self.order_type is OrderType.STOP:
+            if self.stop_price is None:
+                raise ValueError("STOP orders require stop_price")
+            if self.limit_price is not None:
+                raise ValueError("STOP orders cannot carry limit_price")
+        return self
