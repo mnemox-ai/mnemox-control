@@ -33,6 +33,8 @@
 - Result validation prevents missing/duplicate rules, false PASS through SKIP, non-prior/non-DENY dependencies, decision-precedence mismatch, unjustified undefined metrics, bad hashes, and mutable evidence; 115 tests pass.
 - Evaluation Kernel v0.2 Task 6 is complete: pure Decimal helpers classify signed position effects, select adverse executable prices, validate exact increments, and calculate immutable account-wide worst-case exposure envelopes.
 - Opposite pending orders never net, UNKNOWN/non-terminal exposure counts in full, reduce-only orders never reduce capacity, all symbols require catalog/quote coverage, and MARKET orders use adverse bid/ask valuation; 139 tests pass.
+- Evaluation Kernel v0.2 Task 7 is complete: `evaluate()` binds canonical hashes, validates seals and claimed hashes, enforces account/broker bindings, rejects unsupported or uncovered state, and applies exact policy/snapshot/P&L/weekly time boundaries.
+- Preflight denials still emit all 36 ordered rules; calculation-dependent rules use explicit prior-DENY SKIPs and undefined metrics instead of fabricated PASS or partial valuation; 162 tests pass across 7 source files.
 
 ## Recent Changes
 
@@ -49,3 +51,4 @@
 - 2026-08-30: Migrated `PolicyBundle` from v0.1 to v0.2 and added revision lineage, freshness, execution-shape, risk-day, weekly-window controls, and deterministic shared test factories.
 - 2026-08-30: Added the ordered 36-rule evaluation evidence contract with canonical normalization, dependency validation, worst-outcome decision enforcement, and deterministic content sealing.
 - 2026-08-30: Added signed-position and conservative exposure calculations, typed coverage errors, account-wide non-netted envelopes, and Decimal-only adverse-price valuation.
+- 2026-08-30: Added the pure evaluator preflight for integrity, hash, binding, instrument support, complete coverage, freshness, policy validity, P&L period, and weekly trading windows.

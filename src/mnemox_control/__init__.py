@@ -17,6 +17,7 @@ from mnemox_control.evaluation import (
     RuleOutcome,
     RuleResult,
 )
+from mnemox_control.evaluator import evaluate
 from mnemox_control.state import (
     HaltState,
     InstrumentCatalog,
@@ -57,4 +58,5 @@ __all__ = [
     "WeeklyWindow",
     "canonical_json_bytes",
     "content_sha256",
+    "evaluate",
 ]
