@@ -1,0 +1,6 @@
+# Execute only after reading docs/superpowers/specs/2026-08-30-contracts-v0.1-design.md and docs/superpowers/plans/2026-08-30-contracts-v0.1.md.
+Implement Task 1 using strict red-green TDD: project skeleton plus deterministic canonical JSON and SHA-256 helpers. Work in C:/Users/User/projects/mnemox-control.
+Implement Task 2 using strict red-green TDD: immutable PolicyBundle v0.1, normalization, cross-field validation, and known hash fixture.
+Implement Task 3 using strict red-green TDD: OrderIntent with MARKET/LIMIT/STOP semantics and strict identity/quantity validation.
+Implement Task 4 using strict red-green TDD: DecisionReceipt with reason/hash/broker-order invariants and deterministic content hash.
+Complete Task 5: README, AGENTS.md, full pytest/Ruff/mypy/build verification, scoped commits, and push if an origin remote exists.
