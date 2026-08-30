@@ -29,6 +29,8 @@
 - Account contracts sort evidence by stable keys and reject duplicate position symbols/order IDs, invalid exposure values, invalid P&L windows, bad hashes, unknown fields, and mutation; 82 tests pass.
 - Evaluation Kernel v0.2 Task 4 is complete: `PolicyBundle` now requires protocol 0.2, structural revision linkage, positive risk/freshness limits, price/order/reversal controls, UTC risk-day configuration, and normalized non-overlapping weekly windows.
 - Deterministic evaluator test factories now provide sealed default policy/account/market/catalog inputs and pending-order/intent helpers; 103 tests pass, Ruff and strict mypy pass.
+- Evaluation Kernel v0.2 Task 5 is complete: the exact 36-code protocol order, rule outcomes, position effects, structured `RuleResult`, and proof-carrying `EvaluationResult` are implemented.
+- Result validation prevents missing/duplicate rules, false PASS through SKIP, non-prior/non-DENY dependencies, decision-precedence mismatch, unjustified undefined metrics, bad hashes, and mutable evidence; 115 tests pass.
 
 ## Recent Changes
 
@@ -43,3 +45,4 @@
 - 2026-08-30: Added sealed instrument/catalog and market/quote contracts, including deterministic hash support and known-but-unsupported instrument representation.
 - 2026-08-30: Added trusted account, signed position, pending-order exposure, order-status, and halt-state contracts with conservative UNKNOWN-order representation.
 - 2026-08-30: Migrated `PolicyBundle` from v0.1 to v0.2 and added revision lineage, freshness, execution-shape, risk-day, weekly-window controls, and deterministic shared test factories.
+- 2026-08-30: Added the ordered 36-rule evaluation evidence contract with canonical normalization, dependency validation, worst-outcome decision enforcement, and deterministic content sealing.
