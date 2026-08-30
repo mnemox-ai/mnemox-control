@@ -11,7 +11,7 @@
 
 ## Current Status
 
-- Contracts v0.1 implementation is complete on `feat/contracts-v0.1`.
+- Contracts v0.1 implementation is complete on `feat/contracts-v0.1` at commit `86cc71c`.
 - `PolicyBundle`, `OrderIntent`, and `DecisionReceipt` are immutable strict contracts backed by deterministic canonical JSON and SHA-256 content identifiers.
 - Python 3.12.13 verification: 50 tests pass; Ruff passes; strict mypy passes for all 3 source files; sdist and wheel build successfully.
 - Built wheel contains only the 3 expected `mnemox_control` modules plus distribution metadata.
