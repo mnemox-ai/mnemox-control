@@ -16,7 +16,7 @@
 - Python 3.12.13 verification: 50 tests pass; Ruff passes; strict mypy passes for all 3 source files; sdist and wheel build successfully.
 - Built wheel contains only the 3 expected `mnemox_control` modules plus distribution metadata.
 - README documents the protocol purpose, example, and security boundary; v0.1 cannot execute trades or authenticate policy ownership.
-- No Git remote is configured, so the branch cannot be pushed until an origin is added.
+- Public GitHub origin is configured at `https://github.com/mnemox-ai/mnemox-control`; audited v0.2 is published on remote `main` and `feat/evaluation-kernel-v0.2`.
 - Evaluation Kernel v0.2 design was approved by Sean on `feat/evaluation-kernel-v0.2` at commit `b956177`.
 - v0.2 separates the deterministic PDP from the future non-bypassable PEP, binds evaluations to full account/market/instrument state, and uses worst-case pending exposure without cross-order netting.
 - Approved product boundary: Apache protocol/conformance materials, AGPL plus commercial dual-license engine, and proprietary managed trust/enforcement services. No license files change before the implementation plan is approved.
@@ -43,7 +43,7 @@
 - Wheel inspection confirms version 0.2.0, Python >=3.12, `AGPL-3.0-only`, exactly 7 intended engine modules, and both the root license map and complete AGPL-3.0 text; Apache protocol assets remain outside the engine wheel.
 - Success criteria audit: realistic sealed paper inputs produce replayable bound results; tests cover direction/pending/freshness/binding/halt/limits/escalation/fail-safe behavior; vectors reproduce bytes/hashes; docs forbid treating ALLOW as authorization; source scan finds no time/random/network/storage/credential reads; future reservation/reconciliation seams are explicit without changing evaluation semantics.
 - Explicitly deferred PEP/evidence work: issuer signatures and key storage, policy registry/revocation/minimum revision, atomic reservation, single-use `AuthorizationGrant`, idempotent broker submission, credentials/networking, execution persistence/receipts, UNKNOWN reconciliation/watchdog, emergency-flatten authorization, authorization-coverage proof, transparency log, and certification service.
-- Git push remains blocked because this repository has no configured `origin`; all commits are preserved locally on `feat/evaluation-kernel-v0.2`.
+- Remote publication is complete: `origin/main` and `origin/feat/evaluation-kernel-v0.2` both contain the audited v0.2 release lineage.
 
 ## Recent Changes
 
@@ -64,3 +64,4 @@
 - 2026-08-30: Completed the data-driven risk-rule matrix, strict reduce-only semantics, hard-limit/approval precedence, halt behavior, and reducer exemptions for the normal evaluator API.
 - 2026-08-30: Published protocol v0.2 documentation and two conformance vectors, added Hypothesis invariant tests and a reviewed vector generator, and deprecated v0.1 `DecisionReceipt` for new integrations.
 - 2026-08-30: Completed the Python 3.12 release gate, fixed wheel inclusion of the complete AGPL text, expanded bound-input/status property evidence, audited all six spec success criteria, and recorded every deferred PEP capability.
+- 2026-08-30: Created public `mnemox-ai/mnemox-control`, configured `origin`, and published the audited v0.2 commit to both `main` and `feat/evaluation-kernel-v0.2`.

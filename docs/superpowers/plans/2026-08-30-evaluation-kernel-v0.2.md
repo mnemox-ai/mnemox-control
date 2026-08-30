@@ -988,4 +988,5 @@ record that exact blocker in `AGENTS.md` and preserve the branch locally.
 
 Release evidence: Python 3.12.13; 193 tests; Ruff clean; strict mypy clean across 7 source files;
 sdist and wheel build; wheel contains only the 7 intended engine modules, metadata, wheel record,
-root license map, and complete AGPL-3.0 text. `origin` is not configured, so push remains pending.
+root license map, and complete AGPL-3.0 text. Public origin is
+`https://github.com/mnemox-ai/mnemox-control`; `main` and the feature branch are published.

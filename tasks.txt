@@ -9,4 +9,4 @@ DONE Task 7: integrity, binding, coverage, and temporal preflight.
 DONE Task 8: risk rules and data-driven reducer exemptions.
 DONE Task 9: properties, conformance vectors, protocol docs, and migration guidance.
 DONE Task 10: Python 3.12 release gates, wheel inspection, and success-criteria audit.
-pending: configure a Git origin before pushing feat/evaluation-kernel-v0.2.
+DONE Publication: created public mnemox-ai/mnemox-control and pushed main plus feat/evaluation-kernel-v0.2.
