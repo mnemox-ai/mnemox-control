@@ -40,7 +40,7 @@ class StrictFrozenModel(BaseModel):
 
     model_config = ConfigDict(extra="forbid", frozen=True)
 
-    @field_validator("*", mode="before")
+    @field_validator("*", mode="after")
     @classmethod
     def normalize_datetimes(cls, value: object) -> object:
         if isinstance(value, datetime):

@@ -23,6 +23,8 @@
 - The reviewed implementation plan is committed at `c8e2a39` and splits v0.2 into 10 strict TDD tasks covering distribution, contracts, policy migration, evidence, calculations, preflight, risk rules, conformance/property tests, and the Python 3.12 release gate.
 - Evaluation Kernel v0.2 Task 1 is complete: package version is 0.2.0, engine code is `AGPL-3.0-only`, protocol/conformance assets are Apache-2.0, and the commercial-license path is explicitly separate.
 - SPDX license texts were copied without modification (ignoring only final newline); Hypothesis 6.167.0 is installed for the planned property tests; 52 tests pass.
+- Evaluation Kernel v0.2 Task 2 is complete: immutable instrument catalogs and market snapshots enforce recognized enum vocabularies, broker/identity uniqueness, positive quote/instrument constraints, UTC timestamps, and canonical sealing.
+- The shared timestamp validator now rejects naive timestamps even when supplied as strings; 70 tests pass, Ruff passes, and strict mypy passes across 4 source files.
 
 ## Recent Changes
 
@@ -34,3 +36,4 @@
 - 2026-08-30: Designed Evaluation Kernel v0.2 around proof-carrying evaluations, explicit trust roles, temporal/version binding, conservative multi-symbol exposure, rule evidence, and future authorization/reconciliation seams.
 - 2026-08-30: Added the approved v0.2 implementation plan and replaced `tasks.txt` with ten self-contained auto-Codex tasks.
 - 2026-08-30: Established the v0.2 engine/protocol license boundary, added exact SPDX license texts and commercial licensing notice, bumped the package to 0.2.0, and added Hypothesis to dev dependencies.
+- 2026-08-30: Added sealed instrument/catalog and market/quote contracts, including deterministic hash support and known-but-unsupported instrument representation.
