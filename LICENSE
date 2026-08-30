@@ -1,0 +1,16 @@
+Mnemox Control licensing
+========================
+
+The Python evaluation engine under `src/` and its engine tests are licensed
+under the GNU Affero General Public License v3.0 only (AGPL-3.0-only). The
+complete license text is in `LICENSES/AGPL-3.0.txt`.
+
+Protocol specifications, JSON schemas, and conformance vectors under
+`docs/protocol/` and `tests/conformance/` are licensed under the Apache
+License 2.0. The complete license text is in `LICENSES/Apache-2.0.txt`.
+
+Commercial use of the engine under alternative terms requires a separate
+written agreement. See `COMMERCIAL-LICENSE.md`.
+
+The Mnemox name, logos, and trademarks are not licensed by the source-code or
+protocol licenses except as necessary to identify the origin of the work.

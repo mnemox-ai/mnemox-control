@@ -21,6 +21,8 @@
 - v0.2 separates the deterministic PDP from the future non-bypassable PEP, binds evaluations to full account/market/instrument state, and uses worst-case pending exposure without cross-order netting.
 - Approved product boundary: Apache protocol/conformance materials, AGPL plus commercial dual-license engine, and proprietary managed trust/enforcement services. No license files change before the implementation plan is approved.
 - The reviewed implementation plan is committed at `c8e2a39` and splits v0.2 into 10 strict TDD tasks covering distribution, contracts, policy migration, evidence, calculations, preflight, risk rules, conformance/property tests, and the Python 3.12 release gate.
+- Evaluation Kernel v0.2 Task 1 is complete: package version is 0.2.0, engine code is `AGPL-3.0-only`, protocol/conformance assets are Apache-2.0, and the commercial-license path is explicitly separate.
+- SPDX license texts were copied without modification (ignoring only final newline); Hypothesis 6.167.0 is installed for the planned property tests; 52 tests pass.
 
 ## Recent Changes
 
@@ -31,3 +33,4 @@
 - 2026-08-30: Added developer README and completed the Python 3.12 pytest/Ruff/mypy/build release gate.
 - 2026-08-30: Designed Evaluation Kernel v0.2 around proof-carrying evaluations, explicit trust roles, temporal/version binding, conservative multi-symbol exposure, rule evidence, and future authorization/reconciliation seams.
 - 2026-08-30: Added the approved v0.2 implementation plan and replaced `tasks.txt` with ten self-contained auto-Codex tasks.
+- 2026-08-30: Established the v0.2 engine/protocol license boundary, added exact SPDX license texts and commercial licensing notice, bumped the package to 0.2.0, and added Hypothesis to dev dependencies.
