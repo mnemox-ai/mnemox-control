@@ -17,6 +17,9 @@
 - Built wheel contains only the 3 expected `mnemox_control` modules plus distribution metadata.
 - README documents the protocol purpose, example, and security boundary; v0.1 cannot execute trades or authenticate policy ownership.
 - No Git remote is configured, so the branch cannot be pushed until an origin is added.
+- Evaluation Kernel v0.2 design is awaiting Sean's written-spec review on `feat/evaluation-kernel-v0.2`.
+- v0.2 separates the deterministic PDP from the future non-bypassable PEP, binds evaluations to full account/market/instrument state, and uses worst-case pending exposure without cross-order netting.
+- Approved product boundary: Apache protocol/conformance materials, AGPL plus commercial dual-license engine, and proprietary managed trust/enforcement services. No license files change before the implementation plan is approved.
 
 ## Recent Changes
 
@@ -25,3 +28,4 @@
 - 2026-08-30: Added `OrderIntent`, `Side`, and `OrderType` contracts with positive quantity/price validation and exact order-type price invariants.
 - 2026-08-30: Added `DecisionReceipt` and `Decision` contracts with reason-code normalization, hash-chain support, and broker-order safety invariants.
 - 2026-08-30: Added developer README and completed the Python 3.12 pytest/Ruff/mypy/build release gate.
+- 2026-08-30: Designed Evaluation Kernel v0.2 around proof-carrying evaluations, explicit trust roles, temporal/version binding, conservative multi-symbol exposure, rule evidence, and future authorization/reconciliation seams.
