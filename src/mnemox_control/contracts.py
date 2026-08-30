@@ -205,7 +205,7 @@ class Decision(StrEnum):
 
 
 class DecisionReceipt(StrictFrozenModel):
-    """Policy decision and evidence references for one order intent."""
+    """Deprecated v0.1 compatibility contract; use EvaluationResult for new integrations."""
 
     receipt_id: UUID
     intent_id: UUID

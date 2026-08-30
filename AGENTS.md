@@ -37,6 +37,8 @@
 - Preflight denials still emit all 36 ordered rules; calculation-dependent rules use explicit prior-DENY SKIPs and undefined metrics instead of fabricated PASS or partial valuation; 162 tests pass across 7 source files.
 - Evaluation Kernel v0.2 Task 8 is complete: all halt, increment, price-collar, reduce-only, reversal, short, order, position, leverage, equity, loss, drawdown, and approval rules now execute with exact threshold precedence.
 - Every reason code has one explicit `ALWAYS`, `NEW_RISK_ONLY`, or `NORMAL_PATH_BLOCKER` class. Only strict monotonic reducers receive new-risk exemptions; FULL_HALT/RECONCILE and always-enforced integrity/price rules remain non-bypassable; 180 tests pass.
+- Evaluation Kernel v0.2 Task 9 is complete: Hypothesis proves risk/pending monotonicity, strict reduction, deterministic bytes, hash sensitivity, precedence, and input immutability across bounded Decimal strategies.
+- Apache-licensed `basic-allow` and `multi-deny` vectors bind full inputs, complete results, canonical JSON, and hashes byte-for-byte. The public protocol/README now document equations, 36-rule order, enforcement classes, licensing, migration, and the non-execution boundary; 187 tests pass.
 
 ## Recent Changes
 
@@ -55,3 +57,4 @@
 - 2026-08-30: Added signed-position and conservative exposure calculations, typed coverage errors, account-wide non-netted envelopes, and Decimal-only adverse-price valuation.
 - 2026-08-30: Added the pure evaluator preflight for integrity, hash, binding, instrument support, complete coverage, freshness, policy validity, P&L period, and weekly trading windows.
 - 2026-08-30: Completed the data-driven risk-rule matrix, strict reduce-only semantics, hard-limit/approval precedence, halt behavior, and reducer exemptions for the normal evaluator API.
+- 2026-08-30: Published protocol v0.2 documentation and two conformance vectors, added Hypothesis invariant tests and a reviewed vector generator, and deprecated v0.1 `DecisionReceipt` for new integrations.

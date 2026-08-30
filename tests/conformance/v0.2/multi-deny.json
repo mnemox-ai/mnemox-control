@@ -1,0 +1,432 @@
+{
+  "expected": {
+    "canonical_json": "{\"account_snapshot_hash\":\"9784402a8412eba86d9f4d292d6e5c945907885b5a3bc9cac7e8fde911ea0341\",\"account_state_version\":7,\"content_hash\":\"8c97dee3cbba60d34ae18b538e76d2e7fe13a444f039463ff3fbe3dda0dce877\",\"current_position_quantity\":\"0\",\"decision\":\"DENY\",\"evaluated_at\":\"2026-08-30T12:00:00Z\",\"instrument_catalog_hash\":\"4ff1023c70ed6b29f78ff7e4450ad0838114c43365fd612185344fd397bfdc25\",\"intent_hash\":\"12f9569c3b21bcc7d8c0d395fa10cfc299ad90e4e72ddf291aacd9615745cf5b\",\"market_snapshot_hash\":\"48142694b446e12aa12bbcc97e8ce2e8e3898822db77df55852b070bbafec4b8\",\"order_notional\":\"101\",\"policy_hash\":\"ea87f58e8c048aa9a9a080701e14eafca569d34c430e4d4e2d2ef604edc8f6eb\",\"position_effect\":\"OPEN\",\"projected_gross_exposure\":\"101\",\"projected_leverage\":\"2.02\",\"proposed_fill_position_quantity\":\"1\",\"protocol_version\":\"0.2\",\"reference_price\":\"101\",\"rules\":[{\"actual\":null,\"blocked_by\":[],\"code\":\"UNSEALED_TRUST_INPUT\",\"limit\":null,\"outcome\":\"PASS\",\"subjects\":[]},{\"actual\":null,\"blocked_by\":[],\"code\":\"HASH_MISMATCH\",\"limit\":null,\"outcome\":\"PASS\",\"subjects\":[]},{\"actual\":null,\"blocked_by\":[],\"code\":\"BINDING_MISMATCH\",\"limit\":null,\"outcome\":\"PASS\",\"subjects\":[]},{\"actual\":null,\"blocked_by\":[],\"code\":\"UNSUPPORTED_INSTRUMENT\",\"limit\":null,\"outcome\":\"PASS\",\"subjects\":[]},{\"actual\":null,\"blocked_by\":[],\"code\":\"POLICY_NOT_YET_ACTIVE\",\"limit\":null,\"outcome\":\"PASS\",\"subjects\":[]},{\"actual\":null,\"blocked_by\":[],\"code\":\"POLICY_EXPIRED\",\"limit\":null,\"outcome\":\"PASS\",\"subjects\":[]},{\"actual\":null,\"blocked_by\":[],\"code\":\"ACCOUNT_STATE_FROM_FUTURE\",\"limit\":null,\"outcome\":\"PASS\",\"subjects\":[]},{\"actual\":null,\"blocked_by\":[],\"code\":\"ACCOUNT_STATE_STALE\",\"limit\":null,\"outcome\":\"PASS\",\"subjects\":[]},{\"actual\":null,\"blocked_by\":[],\"code\":\"MARKET_STATE_FROM_FUTURE\",\"limit\":null,\"outcome\":\"PASS\",\"subjects\":[]},{\"actual\":\"31\",\"blocked_by\":[],\"code\":\"MARKET_STATE_STALE\",\"limit\":\"30\",\"outcome\":\"DENY\",\"subjects\":[]},{\"actual\":null,\"blocked_by\":[],\"code\":\"INSTRUMENT_STATE_FROM_FUTURE\",\"limit\":null,\"outcome\":\"PASS\",\"subjects\":[]},{\"actual\":null,\"blocked_by\":[],\"code\":\"INSTRUMENT_STATE_STALE\",\"limit\":null,\"outcome\":\"PASS\",\"subjects\":[]},{\"actual\":null,\"blocked_by\":[],\"code\":\"INSTRUMENT_COVERAGE_MISSING\",\"limit\":null,\"outcome\":\"PASS\",\"subjects\":[]},{\"actual\":null,\"blocked_by\":[],\"code\":\"MARKET_COVERAGE_MISSING\",\"limit\":null,\"outcome\":\"PASS\",\"subjects\":[]},{\"actual\":null,\"blocked_by\":[],\"code\":\"PNL_WINDOW_MISMATCH\",\"limit\":null,\"outcome\":\"PASS\",\"subjects\":[]},{\"actual\":null,\"blocked_by\":[],\"code\":\"OUTSIDE_TRADING_WINDOW\",\"limit\":null,\"outcome\":\"PASS\",\"subjects\":[]},{\"actual\":null,\"blocked_by\":[],\"code\":\"RECONCILE_REQUIRED\",\"limit\":null,\"outcome\":\"PASS\",\"subjects\":[]},{\"actual\":null,\"blocked_by\":[],\"code\":\"SOFT_HALT_ACTIVE\",\"limit\":null,\"outcome\":\"PASS\",\"subjects\":[]},{\"actual\":null,\"blocked_by\":[],\"code\":\"FULL_HALT_ACTIVE\",\"limit\":null,\"outcome\":\"PASS\",\"subjects\":[]},{\"actual\":null,\"blocked_by\":[],\"code\":\"REDUCE_ONLY_MODE\",\"limit\":null,\"outcome\":\"PASS\",\"subjects\":[]},{\"actual\":null,\"blocked_by\":[],\"code\":\"SYMBOL_NOT_ALLOWED\",\"limit\":null,\"outcome\":\"DENY\",\"subjects\":[\"BTCUSDT\"]},{\"actual\":null,\"blocked_by\":[],\"code\":\"INVALID_INCREMENT\",\"limit\":null,\"outcome\":\"PASS\",\"subjects\":[]},{\"actual\":null,\"blocked_by\":[],\"code\":\"PRICE_COLLAR_EXCEEDED\",\"limit\":null,\"outcome\":\"PASS\",\"subjects\":[]},{\"actual\":null,\"blocked_by\":[],\"code\":\"REDUCE_ONLY_VIOLATION\",\"limit\":null,\"outcome\":\"PASS\",\"subjects\":[]},{\"actual\":null,\"blocked_by\":[],\"code\":\"REDUCE_ONLY_UNCERTAIN\",\"limit\":null,\"outcome\":\"PASS\",\"subjects\":[]},{\"actual\":null,\"blocked_by\":[],\"code\":\"POSITION_REVERSAL_FORBIDDEN\",\"limit\":null,\"outcome\":\"PASS\",\"subjects\":[]},{\"actual\":null,\"blocked_by\":[],\"code\":\"SHORT_POSITION_FORBIDDEN\",\"limit\":null,\"outcome\":\"PASS\",\"subjects\":[]},{\"actual\":\"1\",\"blocked_by\":[],\"code\":\"OPEN_ORDER_LIMIT_EXCEEDED\",\"limit\":\"0\",\"outcome\":\"DENY\",\"subjects\":[]},{\"actual\":null,\"blocked_by\":[],\"code\":\"ORDER_QUANTITY_EXCEEDED\",\"limit\":null,\"outcome\":\"PASS\",\"subjects\":[]},{\"actual\":\"101\",\"blocked_by\":[],\"code\":\"ORDER_NOTIONAL_EXCEEDED\",\"limit\":\"50\",\"outcome\":\"DENY\",\"subjects\":[]},{\"actual\":\"101\",\"blocked_by\":[],\"code\":\"POSITION_NOTIONAL_EXCEEDED\",\"limit\":\"50\",\"outcome\":\"DENY\",\"subjects\":[]},{\"actual\":\"2.02\",\"blocked_by\":[],\"code\":\"LEVERAGE_EXCEEDED\",\"limit\":\"1\",\"outcome\":\"DENY\",\"subjects\":[]},{\"actual\":null,\"blocked_by\":[],\"code\":\"NON_POSITIVE_EQUITY\",\"limit\":null,\"outcome\":\"PASS\",\"subjects\":[]},{\"actual\":\"-100\",\"blocked_by\":[],\"code\":\"DAILY_LOSS_LIMIT_REACHED\",\"limit\":\"-100\",\"outcome\":\"DENY\",\"subjects\":[]},{\"actual\":\"500\",\"blocked_by\":[],\"code\":\"DRAWDOWN_LIMIT_REACHED\",\"limit\":\"500\",\"outcome\":\"DENY\",\"subjects\":[]},{\"actual\":\"101\",\"blocked_by\":[],\"code\":\"HUMAN_APPROVAL_REQUIRED\",\"limit\":\"25\",\"outcome\":\"ESCALATE\",\"subjects\":[]}],\"worst_case_position_notional\":\"101\",\"worst_case_position_quantity\":\"1\"}",
+    "content_hash": "8c97dee3cbba60d34ae18b538e76d2e7fe13a444f039463ff3fbe3dda0dce877",
+    "result": {
+      "account_snapshot_hash": "9784402a8412eba86d9f4d292d6e5c945907885b5a3bc9cac7e8fde911ea0341",
+      "account_state_version": 7,
+      "content_hash": "8c97dee3cbba60d34ae18b538e76d2e7fe13a444f039463ff3fbe3dda0dce877",
+      "current_position_quantity": "0",
+      "decision": "DENY",
+      "evaluated_at": "2026-08-30T12:00:00Z",
+      "instrument_catalog_hash": "4ff1023c70ed6b29f78ff7e4450ad0838114c43365fd612185344fd397bfdc25",
+      "intent_hash": "12f9569c3b21bcc7d8c0d395fa10cfc299ad90e4e72ddf291aacd9615745cf5b",
+      "market_snapshot_hash": "48142694b446e12aa12bbcc97e8ce2e8e3898822db77df55852b070bbafec4b8",
+      "order_notional": "101",
+      "policy_hash": "ea87f58e8c048aa9a9a080701e14eafca569d34c430e4d4e2d2ef604edc8f6eb",
+      "position_effect": "OPEN",
+      "projected_gross_exposure": "101",
+      "projected_leverage": "2.02",
+      "proposed_fill_position_quantity": "1",
+      "protocol_version": "0.2",
+      "reference_price": "101",
+      "rules": [
+        {
+          "actual": null,
+          "blocked_by": [],
+          "code": "UNSEALED_TRUST_INPUT",
+          "limit": null,
+          "outcome": "PASS",
+          "subjects": []
+        },
+        {
+          "actual": null,
+          "blocked_by": [],
+          "code": "HASH_MISMATCH",
+          "limit": null,
+          "outcome": "PASS",
+          "subjects": []
+        },
+        {
+          "actual": null,
+          "blocked_by": [],
+          "code": "BINDING_MISMATCH",
+          "limit": null,
+          "outcome": "PASS",
+          "subjects": []
+        },
+        {
+          "actual": null,
+          "blocked_by": [],
+          "code": "UNSUPPORTED_INSTRUMENT",
+          "limit": null,
+          "outcome": "PASS",
+          "subjects": []
+        },
+        {
+          "actual": null,
+          "blocked_by": [],
+          "code": "POLICY_NOT_YET_ACTIVE",
+          "limit": null,
+          "outcome": "PASS",
+          "subjects": []
+        },
+        {
+          "actual": null,
+          "blocked_by": [],
+          "code": "POLICY_EXPIRED",
+          "limit": null,
+          "outcome": "PASS",
+          "subjects": []
+        },
+        {
+          "actual": null,
+          "blocked_by": [],
+          "code": "ACCOUNT_STATE_FROM_FUTURE",
+          "limit": null,
+          "outcome": "PASS",
+          "subjects": []
+        },
+        {
+          "actual": null,
+          "blocked_by": [],
+          "code": "ACCOUNT_STATE_STALE",
+          "limit": null,
+          "outcome": "PASS",
+          "subjects": []
+        },
+        {
+          "actual": null,
+          "blocked_by": [],
+          "code": "MARKET_STATE_FROM_FUTURE",
+          "limit": null,
+          "outcome": "PASS",
+          "subjects": []
+        },
+        {
+          "actual": "31",
+          "blocked_by": [],
+          "code": "MARKET_STATE_STALE",
+          "limit": "30",
+          "outcome": "DENY",
+          "subjects": []
+        },
+        {
+          "actual": null,
+          "blocked_by": [],
+          "code": "INSTRUMENT_STATE_FROM_FUTURE",
+          "limit": null,
+          "outcome": "PASS",
+          "subjects": []
+        },
+        {
+          "actual": null,
+          "blocked_by": [],
+          "code": "INSTRUMENT_STATE_STALE",
+          "limit": null,
+          "outcome": "PASS",
+          "subjects": []
+        },
+        {
+          "actual": null,
+          "blocked_by": [],
+          "code": "INSTRUMENT_COVERAGE_MISSING",
+          "limit": null,
+          "outcome": "PASS",
+          "subjects": []
+        },
+        {
+          "actual": null,
+          "blocked_by": [],
+          "code": "MARKET_COVERAGE_MISSING",
+          "limit": null,
+          "outcome": "PASS",
+          "subjects": []
+        },
+        {
+          "actual": null,
+          "blocked_by": [],
+          "code": "PNL_WINDOW_MISMATCH",
+          "limit": null,
+          "outcome": "PASS",
+          "subjects": []
+        },
+        {
+          "actual": null,
+          "blocked_by": [],
+          "code": "OUTSIDE_TRADING_WINDOW",
+          "limit": null,
+          "outcome": "PASS",
+          "subjects": []
+        },
+        {
+          "actual": null,
+          "blocked_by": [],
+          "code": "RECONCILE_REQUIRED",
+          "limit": null,
+          "outcome": "PASS",
+          "subjects": []
+        },
+        {
+          "actual": null,
+          "blocked_by": [],
+          "code": "SOFT_HALT_ACTIVE",
+          "limit": null,
+          "outcome": "PASS",
+          "subjects": []
+        },
+        {
+          "actual": null,
+          "blocked_by": [],
+          "code": "FULL_HALT_ACTIVE",
+          "limit": null,
+          "outcome": "PASS",
+          "subjects": []
+        },
+        {
+          "actual": null,
+          "blocked_by": [],
+          "code": "REDUCE_ONLY_MODE",
+          "limit": null,
+          "outcome": "PASS",
+          "subjects": []
+        },
+        {
+          "actual": null,
+          "blocked_by": [],
+          "code": "SYMBOL_NOT_ALLOWED",
+          "limit": null,
+          "outcome": "DENY",
+          "subjects": [
+            "BTCUSDT"
+          ]
+        },
+        {
+          "actual": null,
+          "blocked_by": [],
+          "code": "INVALID_INCREMENT",
+          "limit": null,
+          "outcome": "PASS",
+          "subjects": []
+        },
+        {
+          "actual": null,
+          "blocked_by": [],
+          "code": "PRICE_COLLAR_EXCEEDED",
+          "limit": null,
+          "outcome": "PASS",
+          "subjects": []
+        },
+        {
+          "actual": null,
+          "blocked_by": [],
+          "code": "REDUCE_ONLY_VIOLATION",
+          "limit": null,
+          "outcome": "PASS",
+          "subjects": []
+        },
+        {
+          "actual": null,
+          "blocked_by": [],
+          "code": "REDUCE_ONLY_UNCERTAIN",
+          "limit": null,
+          "outcome": "PASS",
+          "subjects": []
+        },
+        {
+          "actual": null,
+          "blocked_by": [],
+          "code": "POSITION_REVERSAL_FORBIDDEN",
+          "limit": null,
+          "outcome": "PASS",
+          "subjects": []
+        },
+        {
+          "actual": null,
+          "blocked_by": [],
+          "code": "SHORT_POSITION_FORBIDDEN",
+          "limit": null,
+          "outcome": "PASS",
+          "subjects": []
+        },
+        {
+          "actual": "1",
+          "blocked_by": [],
+          "code": "OPEN_ORDER_LIMIT_EXCEEDED",
+          "limit": "0",
+          "outcome": "DENY",
+          "subjects": []
+        },
+        {
+          "actual": null,
+          "blocked_by": [],
+          "code": "ORDER_QUANTITY_EXCEEDED",
+          "limit": null,
+          "outcome": "PASS",
+          "subjects": []
+        },
+        {
+          "actual": "101",
+          "blocked_by": [],
+          "code": "ORDER_NOTIONAL_EXCEEDED",
+          "limit": "50",
+          "outcome": "DENY",
+          "subjects": []
+        },
+        {
+          "actual": "101",
+          "blocked_by": [],
+          "code": "POSITION_NOTIONAL_EXCEEDED",
+          "limit": "50",
+          "outcome": "DENY",
+          "subjects": []
+        },
+        {
+          "actual": "2.02",
+          "blocked_by": [],
+          "code": "LEVERAGE_EXCEEDED",
+          "limit": "1",
+          "outcome": "DENY",
+          "subjects": []
+        },
+        {
+          "actual": null,
+          "blocked_by": [],
+          "code": "NON_POSITIVE_EQUITY",
+          "limit": null,
+          "outcome": "PASS",
+          "subjects": []
+        },
+        {
+          "actual": "-100",
+          "blocked_by": [],
+          "code": "DAILY_LOSS_LIMIT_REACHED",
+          "limit": "-100",
+          "outcome": "DENY",
+          "subjects": []
+        },
+        {
+          "actual": "500",
+          "blocked_by": [],
+          "code": "DRAWDOWN_LIMIT_REACHED",
+          "limit": "500",
+          "outcome": "DENY",
+          "subjects": []
+        },
+        {
+          "actual": "101",
+          "blocked_by": [],
+          "code": "HUMAN_APPROVAL_REQUIRED",
+          "limit": "25",
+          "outcome": "ESCALATE",
+          "subjects": []
+        }
+      ],
+      "worst_case_position_notional": "101",
+      "worst_case_position_quantity": "1"
+    }
+  },
+  "inputs": {
+    "account": {
+      "account_id": "paper-1",
+      "broker": "binance-demo",
+      "cash_balance": "10000",
+      "content_hash": "9784402a8412eba86d9f4d292d6e5c945907885b5a3bc9cac7e8fde911ea0341",
+      "drawdown_from_peak": "500",
+      "equity": "50",
+      "halt_state": "NORMAL",
+      "observed_at": "2026-08-30T11:59:50Z",
+      "open_orders": [],
+      "positions": [],
+      "realized_pnl_period_end": "2026-08-31T00:00:00Z",
+      "realized_pnl_period_start": "2026-08-30T00:00:00Z",
+      "realized_pnl_today": "-100",
+      "snapshot_id": "55555555-5555-5555-5555-555555555555",
+      "source": "binance-user-stream",
+      "state_version": 7
+    },
+    "evaluated_at": "2026-08-30T12:00:00Z",
+    "instruments": {
+      "broker": "binance-demo",
+      "catalog_id": "33333333-3333-3333-3333-333333333333",
+      "content_hash": "4ff1023c70ed6b29f78ff7e4450ad0838114c43365fd612185344fd397bfdc25",
+      "instruments": [
+        {
+          "allows_short": true,
+          "base_asset": "BTC",
+          "broker": "binance-demo",
+          "contract_multiplier": "1",
+          "instrument_id": "binance:BTCUSDT",
+          "instrument_type": "LINEAR_PERPETUAL",
+          "min_notional": "5",
+          "min_quantity": "0.001",
+          "position_mode": "ONE_WAY",
+          "price_tick": "0.1",
+          "quantity_step": "0.001",
+          "quote_asset": "USDT",
+          "symbol": "BTCUSDT",
+          "version": "2026-08-30"
+        }
+      ],
+      "observed_at": "2026-08-30T11:59:45Z",
+      "version": "2026-08-30"
+    },
+    "intent": {
+      "account_id": "paper-1",
+      "agent_id": "agent-1",
+      "broker": "binance-demo",
+      "created_at": "2026-08-30T11:59:55Z",
+      "intent_id": "22222222-2222-2222-2222-222222222222",
+      "limit_price": null,
+      "market_data_as_of": "2026-08-30T11:59:50Z",
+      "order_type": "MARKET",
+      "quantity": "1",
+      "reason": "deterministic test intent",
+      "reduce_only": false,
+      "side": "BUY",
+      "stop_price": null,
+      "strategy_id": "strategy-1",
+      "symbol": "BTCUSDT"
+    },
+    "market": {
+      "content_hash": "48142694b446e12aa12bbcc97e8ce2e8e3898822db77df55852b070bbafec4b8",
+      "observed_at": "2026-08-30T11:59:29Z",
+      "quotes": [
+        {
+          "ask": "101",
+          "bid": "99",
+          "mark": "100",
+          "symbol": "BTCUSDT"
+        }
+      ],
+      "snapshot_id": "44444444-4444-4444-4444-444444444444",
+      "source": "binance-market-data"
+    },
+    "policy": {
+      "account_id": "paper-1",
+      "allow_position_reversal": false,
+      "allowed_symbols": [
+        "ETHUSDT"
+      ],
+      "allowed_weekly_windows": [
+        {
+          "end_minute_utc": 10080,
+          "start_minute_utc": 0
+        }
+      ],
+      "approval_notional": "25",
+      "broker": "binance-demo",
+      "content_hash": "ea87f58e8c048aa9a9a080701e14eafca569d34c430e4d4e2d2ef604edc8f6eb",
+      "created_at": "2026-08-29T23:00:00Z",
+      "expires_at": "2026-09-30T00:00:00Z",
+      "max_daily_loss": "100",
+      "max_drawdown": "500",
+      "max_instrument_age_seconds": 86400,
+      "max_leverage": "1",
+      "max_market_age_seconds": 30,
+      "max_open_orders": 0,
+      "max_order_notional": "50",
+      "max_order_quantity": null,
+      "max_position_notional": "50",
+      "max_price_deviation_bps": "100",
+      "max_state_age_seconds": 60,
+      "owner_id": "owner-1",
+      "policy_id": "11111111-1111-1111-1111-111111111111",
+      "previous_policy_hash": null,
+      "revision": 1,
+      "risk_day_start_hour_utc": 0,
+      "valid_from": "2026-08-30T00:00:00Z",
+      "version": "0.2"
+    }
+  }
+}
