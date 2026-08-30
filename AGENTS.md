@@ -20,7 +20,7 @@
 - Evaluation Kernel v0.2 design was approved by Sean on `feat/evaluation-kernel-v0.2` at commit `b956177`.
 - v0.2 separates the deterministic PDP from the future non-bypassable PEP, binds evaluations to full account/market/instrument state, and uses worst-case pending exposure without cross-order netting.
 - Approved product boundary: Apache protocol/conformance materials, AGPL plus commercial dual-license engine, and proprietary managed trust/enforcement services. No license files change before the implementation plan is approved.
-- The reviewed implementation plan splits v0.2 into 10 strict TDD tasks covering distribution, contracts, policy migration, evidence, calculations, preflight, risk rules, conformance/property tests, and the Python 3.12 release gate.
+- The reviewed implementation plan is committed at `c8e2a39` and splits v0.2 into 10 strict TDD tasks covering distribution, contracts, policy migration, evidence, calculations, preflight, risk rules, conformance/property tests, and the Python 3.12 release gate.
 
 ## Recent Changes
 
