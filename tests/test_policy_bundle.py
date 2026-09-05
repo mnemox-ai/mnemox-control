@@ -12,7 +12,7 @@ from mnemox_control.contracts import PolicyBundle
 def valid_policy_data() -> dict[str, object]:
     return {
         "policy_id": UUID("11111111-1111-1111-1111-111111111111"),
-        "version": "0.2",
+        "version": "0.3",
         "revision": 1,
         "previous_policy_hash": None,
         "owner_id": "owner-1",
@@ -31,6 +31,7 @@ def valid_policy_data() -> dict[str, object]:
         "max_price_deviation_bps": Decimal("100"),
         "max_open_orders": 10,
         "max_order_quantity": None,
+        "require_protective_stop": False,
         "allow_position_reversal": False,
         "risk_day_start_hour_utc": 0,
         "allowed_weekly_windows": ({"start_minute_utc": 0, "end_minute_utc": 10080},),

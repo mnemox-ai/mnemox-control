@@ -1,4 +1,4 @@
-"""Print reviewed protocol v0.2 conformance vectors for repository updates."""
+"""Print reviewed protocol v0.3 conformance vectors for repository updates."""
 
 from __future__ import annotations
 

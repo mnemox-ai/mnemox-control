@@ -67,7 +67,7 @@ class PolicyBundle(StrictFrozenModel):
     """Owner-defined limits that govern an account for a fixed time window."""
 
     policy_id: UUID
-    version: Literal["0.2"] = "0.2"
+    version: Literal["0.3"] = "0.3"
     revision: Annotated[int, Field(ge=1)]
     previous_policy_hash: str | None = None
     owner_id: NonBlankStr
@@ -86,6 +86,9 @@ class PolicyBundle(StrictFrozenModel):
     max_price_deviation_bps: NonNegativeDecimal
     max_open_orders: Annotated[int, Field(ge=0)]
     max_order_quantity: PositiveDecimal | None
+    require_protective_stop: bool
+    max_stop_distance_bps: Annotated[int, Field(gt=0)] | None = None
+    min_stop_distance_bps: Annotated[int, Field(gt=0)] | None = None
     allow_position_reversal: bool
     risk_day_start_hour_utc: Annotated[int, Field(ge=0, le=23)]
     allowed_weekly_windows: Annotated[tuple[WeeklyWindow, ...], Field(min_length=1)]
@@ -106,9 +109,7 @@ class PolicyBundle(StrictFrozenModel):
 
     @field_validator("allowed_weekly_windows", mode="after")
     @classmethod
-    def sort_weekly_windows(
-        cls, value: tuple[WeeklyWindow, ...]
-    ) -> tuple[WeeklyWindow, ...]:
+    def sort_weekly_windows(cls, value: tuple[WeeklyWindow, ...]) -> tuple[WeeklyWindow, ...]:
         return tuple(sorted(value, key=lambda window: window.start_minute_utc))
 
     @field_validator("previous_policy_hash", "content_hash")
@@ -126,6 +127,12 @@ class PolicyBundle(StrictFrozenModel):
             raise ValueError("previous_policy_hash is required after revision 1")
         if self.approval_notional > self.max_order_notional:
             raise ValueError("approval_notional cannot exceed max_order_notional")
+        if (
+            self.min_stop_distance_bps is not None
+            and self.max_stop_distance_bps is not None
+            and self.min_stop_distance_bps >= self.max_stop_distance_bps
+        ):
+            raise ValueError("min_stop_distance_bps must be below max_stop_distance_bps")
         if self.valid_from >= self.expires_at:
             raise ValueError("expires_at must be later than valid_from")
         if self.created_at > self.valid_from:
@@ -169,6 +176,7 @@ class OrderIntent(StrictFrozenModel):
     quantity: PositiveDecimal
     limit_price: PositiveDecimal | None = None
     stop_price: PositiveDecimal | None = None
+    protective_stop_price: PositiveDecimal | None = None
     reduce_only: bool = False
     strategy_id: NonBlankStr
     reason: NonBlankStr
@@ -195,6 +203,12 @@ class OrderIntent(StrictFrozenModel):
                 raise ValueError("STOP orders require stop_price")
             if self.limit_price is not None:
                 raise ValueError("STOP orders cannot carry limit_price")
+            if self.protective_stop_price is not None:
+                raise ValueError("STOP orders cannot carry protective_stop_price")
+        if self.reduce_only and self.protective_stop_price is not None:
+            # A reduce-only order shrinks exposure, so protecting it is meaningless and
+            # would leave the mapping with two stops and no position to attach them to.
+            raise ValueError("reduce-only orders cannot carry protective_stop_price")
         return self
 
 

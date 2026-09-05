@@ -55,6 +55,10 @@ class ReasonCode(StrEnum):
     SYMBOL_NOT_ALLOWED = "SYMBOL_NOT_ALLOWED"
     INVALID_INCREMENT = "INVALID_INCREMENT"
     PRICE_COLLAR_EXCEEDED = "PRICE_COLLAR_EXCEEDED"
+    PROTECTIVE_STOP_REQUIRED = "PROTECTIVE_STOP_REQUIRED"
+    PROTECTIVE_STOP_WRONG_SIDE = "PROTECTIVE_STOP_WRONG_SIDE"
+    PROTECTIVE_STOP_TOO_FAR = "PROTECTIVE_STOP_TOO_FAR"
+    PROTECTIVE_STOP_TOO_CLOSE = "PROTECTIVE_STOP_TOO_CLOSE"
     REDUCE_ONLY_VIOLATION = "REDUCE_ONLY_VIOLATION"
     REDUCE_ONLY_UNCERTAIN = "REDUCE_ONLY_UNCERTAIN"
     POSITION_REVERSAL_FORBIDDEN = "POSITION_REVERSAL_FORBIDDEN"
@@ -85,9 +89,7 @@ class RuleResult(StrictFrozenModel):
 
     @field_validator("blocked_by", mode="after")
     @classmethod
-    def normalize_dependencies(
-        cls, value: tuple[ReasonCode, ...]
-    ) -> tuple[ReasonCode, ...]:
+    def normalize_dependencies(cls, value: tuple[ReasonCode, ...]) -> tuple[ReasonCode, ...]:
         return tuple(sorted(set(value), key=_REASON_INDEX.__getitem__))
 
     @field_validator("subjects", mode="before")

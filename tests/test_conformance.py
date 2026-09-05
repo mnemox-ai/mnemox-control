@@ -7,7 +7,7 @@ from mnemox_control.contracts import OrderIntent, PolicyBundle
 from mnemox_control.evaluator import evaluate
 from mnemox_control.state import InstrumentCatalog, MarketSnapshot, TrustedAccountSnapshot
 
-FIXTURE_ROOT = Path(__file__).parent / "conformance" / "v0.2"
+FIXTURE_ROOT = Path(__file__).parent / "conformance" / "v0.3"
 
 
 def test_published_conformance_vectors_match_byte_for_byte() -> None:
@@ -27,7 +27,5 @@ def test_published_conformance_vectors_match_byte_for_byte() -> None:
         )
 
         assert result.model_dump(mode="json") == fixture["expected"]["result"]
-        assert canonical_json_bytes(result).decode("utf-8") == fixture["expected"][
-            "canonical_json"
-        ]
+        assert canonical_json_bytes(result).decode("utf-8") == fixture["expected"]["canonical_json"]
         assert result.content_hash == fixture["expected"]["content_hash"]

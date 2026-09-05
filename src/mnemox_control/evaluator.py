@@ -31,9 +31,7 @@ class EnforcementClass(StrEnum):
     NORMAL_PATH_BLOCKER = "NORMAL_PATH_BLOCKER"
 
 
-_NORMAL_PATH_BLOCKERS = frozenset(
-    {ReasonCode.RECONCILE_REQUIRED, ReasonCode.FULL_HALT_ACTIVE}
-)
+_NORMAL_PATH_BLOCKERS = frozenset({ReasonCode.RECONCILE_REQUIRED, ReasonCode.FULL_HALT_ACTIVE})
 _NEW_RISK_ONLY = frozenset(
     {
         ReasonCode.OUTSIDE_TRADING_WINDOW,
@@ -42,6 +40,10 @@ _NEW_RISK_ONLY = frozenset(
         ReasonCode.SYMBOL_NOT_ALLOWED,
         ReasonCode.SHORT_POSITION_FORBIDDEN,
         ReasonCode.OPEN_ORDER_LIMIT_EXCEEDED,
+        ReasonCode.PROTECTIVE_STOP_REQUIRED,
+        ReasonCode.PROTECTIVE_STOP_WRONG_SIDE,
+        ReasonCode.PROTECTIVE_STOP_TOO_FAR,
+        ReasonCode.PROTECTIVE_STOP_TOO_CLOSE,
         ReasonCode.ORDER_QUANTITY_EXCEEDED,
         ReasonCode.ORDER_NOTIONAL_EXCEEDED,
         ReasonCode.POSITION_NOTIONAL_EXCEEDED,
@@ -153,9 +155,7 @@ def evaluate(
             limit=limit,
         )
 
-    unsealed = tuple(
-        name for name, claimed_hash in trust_claims.items() if claimed_hash is None
-    )
+    unsealed = tuple(name for name, claimed_hash in trust_claims.items() if claimed_hash is None)
     if unsealed:
         deny(ReasonCode.UNSEALED_TRUST_INPUT, subjects=unsealed)
 
@@ -239,10 +239,9 @@ def evaluate(
         if age < timedelta(0):
             deny(future_code, actual=observed_at.isoformat(), limit=evaluated_at.isoformat())
         elif age > timedelta(seconds=max_age):
-            age_seconds = (
-                Decimal(age.days * 86400 + age.seconds)
-                + Decimal(age.microseconds) / Decimal(1_000_000)
-            )
+            age_seconds = Decimal(age.days * 86400 + age.seconds) + Decimal(
+                age.microseconds
+            ) / Decimal(1_000_000)
             deny(stale_code, actual=age_seconds, limit=Decimal(max_age))
 
     if missing_instruments:
@@ -254,11 +253,7 @@ def evaluate(
     if (
         account.realized_pnl_period_start != expected_pnl_start
         or account.realized_pnl_period_end != expected_pnl_end
-        or not (
-            account.realized_pnl_period_start
-            <= evaluated_at
-            < account.realized_pnl_period_end
-        )
+        or not (account.realized_pnl_period_start <= evaluated_at < account.realized_pnl_period_end)
     ):
         deny(
             ReasonCode.PNL_WINDOW_MISMATCH,
@@ -325,10 +320,7 @@ def evaluate(
             and current_quantity != 0
             and (signed_quantity > 0) != (current_quantity > 0)
             and abs(proposed_fill) < abs(current_quantity)
-            and (
-                proposed_fill == 0
-                or (proposed_fill > 0) == (current_quantity > 0)
-            )
+            and (proposed_fill == 0 or (proposed_fill > 0) == (current_quantity > 0))
         )
 
         def set_violation(
@@ -342,10 +334,7 @@ def evaluate(
         ) -> None:
             if not condition:
                 return
-            if (
-                valid_strict_reducer
-                and RULE_ENFORCEMENT[code] is EnforcementClass.NEW_RISK_ONLY
-            ):
+            if valid_strict_reducer and RULE_ENFORCEMENT[code] is EnforcementClass.NEW_RISK_ONLY:
                 rules[code] = RuleResult(
                     code=code,
                     outcome=RuleOutcome.PASS,
@@ -421,9 +410,8 @@ def evaluate(
         )
         set_violation(
             ReasonCode.REDUCE_ONLY_UNCERTAIN,
-            intent.reduce_only and any(
-                order.symbol == intent.symbol for order in account.open_orders
-            ),
+            intent.reduce_only
+            and any(order.symbol == intent.symbol for order in account.open_orders),
             subjects=(intent.symbol,),
         )
         set_violation(
@@ -445,10 +433,56 @@ def evaluate(
             actual=Decimal(proposed_open_orders),
             limit=Decimal(policy.max_open_orders),
         )
+        protective = intent.protective_stop_price
+        set_violation(
+            ReasonCode.PROTECTIVE_STOP_REQUIRED,
+            policy.require_protective_stop and not intent.reduce_only and protective is None,
+            actual=False,
+            limit=True,
+        )
+        # Distance is measured from the same reference price the rest of the evaluation
+        # uses, so a stop is judged against the price the order would actually get.
+        wrong_side = protective is not None and (
+            protective >= reference if intent.side is Side.BUY else protective <= reference
+        )
+        set_violation(
+            ReasonCode.PROTECTIVE_STOP_WRONG_SIDE,
+            wrong_side,
+            actual=protective,
+            limit=reference,
+        )
+        distance_bps = (
+            abs(reference - protective) * Decimal(10000) / reference
+            if protective is not None and not wrong_side and reference > 0
+            else None
+        )
+        set_violation(
+            ReasonCode.PROTECTIVE_STOP_TOO_FAR,
+            distance_bps is not None
+            and policy.max_stop_distance_bps is not None
+            and distance_bps > Decimal(policy.max_stop_distance_bps),
+            actual=distance_bps,
+            limit=(
+                Decimal(policy.max_stop_distance_bps)
+                if policy.max_stop_distance_bps is not None
+                else None
+            ),
+        )
+        set_violation(
+            ReasonCode.PROTECTIVE_STOP_TOO_CLOSE,
+            distance_bps is not None
+            and policy.min_stop_distance_bps is not None
+            and distance_bps < Decimal(policy.min_stop_distance_bps),
+            actual=distance_bps,
+            limit=(
+                Decimal(policy.min_stop_distance_bps)
+                if policy.min_stop_distance_bps is not None
+                else None
+            ),
+        )
         set_violation(
             ReasonCode.ORDER_QUANTITY_EXCEEDED,
-            policy.max_order_quantity is not None
-            and intent.quantity > policy.max_order_quantity,
+            policy.max_order_quantity is not None and intent.quantity > policy.max_order_quantity,
             actual=intent.quantity,
             limit=policy.max_order_quantity,
         )

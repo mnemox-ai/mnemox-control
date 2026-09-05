@@ -8,10 +8,10 @@ from mnemox_control.contracts import PolicyBundle, WeeklyWindow
 from tests.factories import policy_data
 
 
-def test_policy_v02_requires_revision_link_shape() -> None:
+def test_policy_v03_requires_revision_link_shape() -> None:
     policy = PolicyBundle(**policy_data())
 
-    assert policy.version == "0.2"
+    assert policy.version == "0.3"
     assert policy.revision == 1
     assert policy.previous_policy_hash is None
 

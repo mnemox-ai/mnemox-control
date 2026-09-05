@@ -50,7 +50,7 @@ def replace_rule(
 
 
 def test_reason_code_vocabulary_and_order_are_protocol_fixed() -> None:
-    assert len(ReasonCode) == 36
+    assert len(ReasonCode) == 40
     assert tuple(ReasonCode)[:4] == (
         ReasonCode.UNSEALED_TRUST_INPUT,
         ReasonCode.HASH_MISMATCH,

@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "mnemox-control"
-version = "0.2.0"
+version = "0.3.0"
 description = "Deterministic risk-control and decision-evidence contracts for agentic trading"
 readme = "README.md"
 requires-python = ">=3.12"
