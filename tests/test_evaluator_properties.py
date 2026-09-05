@@ -21,9 +21,7 @@ quantities = st.decimals(
 
 
 @given(smaller=quantities, extra=quantities)
-def test_more_risk_never_reduces_worst_case_exposure(
-    smaller: Decimal, extra: Decimal
-) -> None:
+def test_more_risk_never_reduces_worst_case_exposure(smaller: Decimal, extra: Decimal) -> None:
     smaller_result = evaluate(**inputs_for_quantity(smaller).as_kwargs())
     larger_result = evaluate(**inputs_for_quantity(smaller + extra).as_kwargs())
 
@@ -131,9 +129,7 @@ def test_deny_precedence_is_invariant_when_approval_also_triggers(quantity: Deci
 
 
 @given(
-    target=st.sampled_from(
-        ("policy", "intent", "account", "market", "instruments", "evaluated_at")
-    )
+    target=st.sampled_from(("policy", "intent", "account", "market", "instruments", "evaluated_at"))
 )
 def test_mutating_any_bound_input_changes_result_hash(target: str) -> None:
     inputs = valid_inputs()

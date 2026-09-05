@@ -141,15 +141,11 @@ def build_exposure_metrics(
                 lower_quantity -= proposed.quantity
 
         worst_quantity = (
-            upper_quantity
-            if abs(upper_quantity) >= abs(lower_quantity)
-            else lower_quantity
+            upper_quantity if abs(upper_quantity) >= abs(lower_quantity) else lower_quantity
         )
         worst_quantities[symbol] = worst_quantity
         notionals[symbol] = (
-            abs(worst_quantity)
-            * conservative_price
-            * instruments[symbol].contract_multiplier
+            abs(worst_quantity) * conservative_price * instruments[symbol].contract_multiplier
         )
 
     gross_exposure = sum(notionals.values(), start=Decimal(0))

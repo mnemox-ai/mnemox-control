@@ -168,8 +168,7 @@ def test_instrument_represents_known_but_unsupported_type(
     valid_instrument_data["instrument_type"] = "INVERSE_PERPETUAL"
 
     assert (
-        InstrumentSpec(**valid_instrument_data).instrument_type
-        is InstrumentType.INVERSE_PERPETUAL
+        InstrumentSpec(**valid_instrument_data).instrument_type is InstrumentType.INVERSE_PERPETUAL
     )
 
 
@@ -347,9 +346,7 @@ def test_account_rejects_invalid_risk_state(
 
 
 def test_account_requires_half_open_pnl_window(valid_account_data: dict[str, object]) -> None:
-    valid_account_data["realized_pnl_period_end"] = valid_account_data[
-        "realized_pnl_period_start"
-    ]
+    valid_account_data["realized_pnl_period_end"] = valid_account_data["realized_pnl_period_start"]
 
     with pytest.raises(ValidationError, match="period_end"):
         TrustedAccountSnapshot(**valid_account_data)

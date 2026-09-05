@@ -88,9 +88,7 @@ def test_declared_order_price_is_reference(
     ("value", "step", "expected"),
     [("1.200", "0.001", True), ("1.2001", "0.001", False), ("0", "0.1", True)],
 )
-def test_step_alignment_uses_exact_decimal_modulo(
-    value: str, step: str, expected: bool
-) -> None:
+def test_step_alignment_uses_exact_decimal_modulo(value: str, step: str, expected: bool) -> None:
     assert is_step_aligned(Decimal(value), Decimal(step)) is expected
 
 

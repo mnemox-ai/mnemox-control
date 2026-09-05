@@ -81,9 +81,7 @@ def test_scalar_maximum_boundaries_are_inclusive() -> None:
         ({"drawdown_from_peak": Decimal("500")}, "DRAWDOWN_LIMIT_REACHED"),
     ],
 )
-def test_loss_boundaries_deny_at_threshold(
-    account_changes: dict[str, object], rule: str
-) -> None:
+def test_loss_boundaries_deny_at_threshold(account_changes: dict[str, object], rule: str) -> None:
     inputs = valid_inputs()
     account = sealed_account(inputs, **account_changes)
 

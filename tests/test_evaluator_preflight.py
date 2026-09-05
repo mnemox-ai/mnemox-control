@@ -118,12 +118,16 @@ def test_known_but_unsupported_instrument_denies_without_wrong_formula() -> None
 )
 def test_future_snapshot_is_a_distinct_denial(target: str, rule: str) -> None:
     inputs = valid_inputs()
-    changed = getattr(inputs, target).model_copy(
-        update={
-            "observed_at": inputs.evaluated_at + timedelta(microseconds=1),
-            "content_hash": None,
-        }
-    ).with_content_hash()
+    changed = (
+        getattr(inputs, target)
+        .model_copy(
+            update={
+                "observed_at": inputs.evaluated_at + timedelta(microseconds=1),
+                "content_hash": None,
+            }
+        )
+        .with_content_hash()
+    )
 
     result = evaluate(**inputs.replace(**{target: changed}).as_kwargs())
 
@@ -138,24 +142,25 @@ def test_future_snapshot_is_a_distinct_denial(target: str, rule: str) -> None:
         ("instruments", "max_instrument_age_seconds", "INSTRUMENT_STATE_STALE"),
     ],
 )
-def test_snapshot_age_boundary_is_inclusive(
-    target: str, age_field: str, rule: str
-) -> None:
+def test_snapshot_age_boundary_is_inclusive(target: str, age_field: str, rule: str) -> None:
     inputs = valid_inputs()
     max_age = getattr(inputs.policy, age_field)
-    exact = getattr(inputs, target).model_copy(
-        update={
-            "observed_at": inputs.evaluated_at - timedelta(seconds=max_age),
-            "content_hash": None,
-        }
-    ).with_content_hash()
+    exact = (
+        getattr(inputs, target)
+        .model_copy(
+            update={
+                "observed_at": inputs.evaluated_at - timedelta(seconds=max_age),
+                "content_hash": None,
+            }
+        )
+        .with_content_hash()
+    )
     exact_result = evaluate(**inputs.replace(**{target: exact}).as_kwargs())
     assert exact_result.rule(rule).outcome is RuleOutcome.PASS
 
     stale = exact.model_copy(
         update={
-            "observed_at": inputs.evaluated_at
-            - timedelta(seconds=max_age, microseconds=1),
+            "observed_at": inputs.evaluated_at - timedelta(seconds=max_age, microseconds=1),
             "content_hash": None,
         }
     ).with_content_hash()

@@ -24,9 +24,7 @@ from mnemox_control import (
     evaluate,
 )
 
-fixture = json.loads(
-    Path("tests/conformance/v0.2/basic-allow.json").read_text(encoding="utf-8")
-)
+fixture = json.loads(Path("tests/conformance/v0.2/basic-allow.json").read_text(encoding="utf-8"))
 inputs = fixture["inputs"]
 result = evaluate(
     policy=PolicyBundle.model_validate(inputs["policy"]),

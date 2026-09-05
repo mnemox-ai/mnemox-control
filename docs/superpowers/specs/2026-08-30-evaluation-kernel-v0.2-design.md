@@ -410,8 +410,7 @@ def evaluate(
     market: MarketSnapshot,
     instruments: InstrumentCatalog,
     evaluated_at: datetime,
-) -> EvaluationResult:
-    ...
+) -> EvaluationResult: ...
 ```
 
 The function never generates time, UUIDs, or randomness. All model inputs are canonicalized and

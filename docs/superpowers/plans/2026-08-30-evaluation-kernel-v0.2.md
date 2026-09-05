@@ -598,8 +598,13 @@ Commit: `feat: define evaluation evidence contract`
 ```python
 @pytest.mark.parametrize(
     ("current", "delta", "expected"),
-    [("0", "1", "OPEN"), ("1", "1", "INCREASE"), ("2", "-1", "REDUCE"),
-     ("1", "-1", "CLOSE"), ("1", "-2", "REVERSE")],
+    [
+        ("0", "1", "OPEN"),
+        ("1", "1", "INCREASE"),
+        ("2", "-1", "REDUCE"),
+        ("1", "-1", "CLOSE"),
+        ("1", "-2", "REVERSE"),
+    ],
 )
 def test_classifies_position_effect(current: str, delta: str, expected: str) -> None:
     proposed = Decimal(current) + Decimal(delta)
@@ -788,26 +793,30 @@ class EnforcementClass(StrEnum):
     NORMAL_PATH_BLOCKER = "NORMAL_PATH_BLOCKER"
 
 
-_NORMAL_PATH_BLOCKERS = frozenset({
-    ReasonCode.RECONCILE_REQUIRED,
-    ReasonCode.FULL_HALT_ACTIVE,
-})
-_NEW_RISK_ONLY = frozenset({
-    ReasonCode.OUTSIDE_TRADING_WINDOW,
-    ReasonCode.SOFT_HALT_ACTIVE,
-    ReasonCode.REDUCE_ONLY_MODE,
-    ReasonCode.SYMBOL_NOT_ALLOWED,
-    ReasonCode.SHORT_POSITION_FORBIDDEN,
-    ReasonCode.OPEN_ORDER_LIMIT_EXCEEDED,
-    ReasonCode.ORDER_QUANTITY_EXCEEDED,
-    ReasonCode.ORDER_NOTIONAL_EXCEEDED,
-    ReasonCode.POSITION_NOTIONAL_EXCEEDED,
-    ReasonCode.LEVERAGE_EXCEEDED,
-    ReasonCode.NON_POSITIVE_EQUITY,
-    ReasonCode.DAILY_LOSS_LIMIT_REACHED,
-    ReasonCode.DRAWDOWN_LIMIT_REACHED,
-    ReasonCode.HUMAN_APPROVAL_REQUIRED,
-})
+_NORMAL_PATH_BLOCKERS = frozenset(
+    {
+        ReasonCode.RECONCILE_REQUIRED,
+        ReasonCode.FULL_HALT_ACTIVE,
+    }
+)
+_NEW_RISK_ONLY = frozenset(
+    {
+        ReasonCode.OUTSIDE_TRADING_WINDOW,
+        ReasonCode.SOFT_HALT_ACTIVE,
+        ReasonCode.REDUCE_ONLY_MODE,
+        ReasonCode.SYMBOL_NOT_ALLOWED,
+        ReasonCode.SHORT_POSITION_FORBIDDEN,
+        ReasonCode.OPEN_ORDER_LIMIT_EXCEEDED,
+        ReasonCode.ORDER_QUANTITY_EXCEEDED,
+        ReasonCode.ORDER_NOTIONAL_EXCEEDED,
+        ReasonCode.POSITION_NOTIONAL_EXCEEDED,
+        ReasonCode.LEVERAGE_EXCEEDED,
+        ReasonCode.NON_POSITIVE_EQUITY,
+        ReasonCode.DAILY_LOSS_LIMIT_REACHED,
+        ReasonCode.DRAWDOWN_LIMIT_REACHED,
+        ReasonCode.HUMAN_APPROVAL_REQUIRED,
+    }
+)
 _ALWAYS = frozenset(ReasonCode) - _NORMAL_PATH_BLOCKERS - _NEW_RISK_ONLY
 assert _ALWAYS | _NORMAL_PATH_BLOCKERS | _NEW_RISK_ONLY == frozenset(ReasonCode)
 ```
