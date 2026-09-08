@@ -11,6 +11,15 @@
 
 ## Current Status
 
+- **v0.3.0 (2026-09-09)** — protocol 0.3 (protective stop) is merged to `main` at `f7d9953` (fast-forward from `feat/protective-stop-v0.3`) and tagged `v0.3.0`. Not published to PyPI; no GitHub release created (Sean's decision 2026-09-09).
+- `PolicyBundle.require_protective_stop` is required with no default; `max_stop_distance_bps` / `min_stop_distance_bps` are optional positive bounds (min strictly below max when both present).
+- `OrderIntent.protective_stop_price` (optional `Decimal`) carries the stop for an entry; reduce-only intents are exempt.
+- Four new `NEW_RISK_ONLY` reason codes: `PROTECTIVE_STOP_REQUIRED`, `PROTECTIVE_STOP_WRONG_SIDE`, `PROTECTIVE_STOP_TOO_FAR`, `PROTECTIVE_STOP_TOO_CLOSE`; vocabulary grows 36 -> 40, existing order unchanged.
+- Breaking: a v0.2 `PolicyBundle` no longer validates under v0.3, and every policy content hash changes. Conformance vectors regenerated under `tests/conformance/v0.3/`; package version is 0.3.0.
+- `mnemox-gateway` v0.3.0 pins this exact commit (`mnemox-control @ git+...@f7d9953e789a61d1d7b29e7830e40d561f289b44`).
+
+### v0.2 history (2026-08-30, superseded by v0.3.0)
+
 - Contracts v0.1 implementation is complete on `feat/contracts-v0.1` at commit `86cc71c`.
 - `PolicyBundle`, `OrderIntent`, and `DecisionReceipt` are immutable strict contracts backed by deterministic canonical JSON and SHA-256 content identifiers.
 - Python 3.12.13 verification: 50 tests pass; Ruff passes; strict mypy passes for all 3 source files; sdist and wheel build successfully.
@@ -47,10 +56,7 @@
 
 ## Recent Changes
 
-- 2026-08-30: Added contracts v0.1 design, implementation plan, task file, package metadata, deterministic canonical serialization, and SHA-256 content hashing.
-- 2026-08-30: Added strict frozen contract base and `PolicyBundle` normalization, cross-field validation, UTC handling, and content hashing.
-- 2026-08-30: Added `OrderIntent`, `Side`, and `OrderType` contracts with positive quantity/price validation and exact order-type price invariants.
-- 2026-08-30: Added `DecisionReceipt` and `Decision` contracts with reason-code normalization, hash-chain support, and broker-order safety invariants.
+- 2026-09-09: Merged `feat/protective-stop-v0.3` to `main` (fast-forward, `f7d9953`), tagged `v0.3.0`; protocol 0.3 protective stop, breaking for v0.2 bundles; not published to PyPI.
 - 2026-08-30: Added developer README and completed the Python 3.12 pytest/Ruff/mypy/build release gate.
 - 2026-08-30: Designed Evaluation Kernel v0.2 around proof-carrying evaluations, explicit trust roles, temporal/version binding, conservative multi-symbol exposure, rule evidence, and future authorization/reconciliation seams.
 - 2026-08-30: Added the approved v0.2 implementation plan and replaced `tasks.txt` with ten self-contained auto-Codex tasks.
@@ -65,3 +71,5 @@
 - 2026-08-30: Published protocol v0.2 documentation and two conformance vectors, added Hypothesis invariant tests and a reviewed vector generator, and deprecated v0.1 `DecisionReceipt` for new integrations.
 - 2026-08-30: Completed the Python 3.12 release gate, fixed wheel inclusion of the complete AGPL text, expanded bound-input/status property evidence, audited all six spec success criteria, and recorded every deferred PEP capability.
 - 2026-08-30: Created public `mnemox-ai/mnemox-control`, configured `origin`, and published the audited v0.2 commit to both `main` and `feat/evaluation-kernel-v0.2`.
+
+Older entries: `docs/CHANGELOG.md`.

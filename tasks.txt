@@ -10,3 +10,5 @@ DONE Task 8: risk rules and data-driven reducer exemptions.
 DONE Task 9: properties, conformance vectors, protocol docs, and migration guidance.
 DONE Task 10: Python 3.12 release gates, wheel inspection, and success-criteria audit.
 DONE Publication: created public mnemox-ai/mnemox-control and pushed main plus feat/evaluation-kernel-v0.2.
+
+DONE v0.3 (2026-09-09): protocol 0.3 protective stop merged to main (f7d9953) and tagged v0.3.0; not published to PyPI.
