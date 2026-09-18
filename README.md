@@ -2,9 +2,9 @@
 
 Mnemox Control is a broker-neutral Policy Evaluation Engine for agentic trading. It evaluates an
 untrusted order intent against an owner policy and sealed account, market, and instrument state,
-then returns deterministic proof-carrying evidence with 36 ordered rules.
+then returns deterministic proof-carrying evidence with 40 ordered rules.
 
-This repository implements the v0.2 Policy Decision Point (PDP). It does **not** execute trades,
+This repository implements the v0.3 Policy Decision Point (PDP). It does **not** execute trades,
 hold broker credentials, authenticate policy owners, reserve exposure, or issue single-use order
 authorizations.
 
@@ -24,7 +24,7 @@ from mnemox_control import (
     evaluate,
 )
 
-fixture = json.loads(Path("tests/conformance/v0.2/basic-allow.json").read_text(encoding="utf-8"))
+fixture = json.loads(Path("tests/conformance/v0.3/basic-allow.json").read_text(encoding="utf-8"))
 inputs = fixture["inputs"]
 result = evaluate(
     policy=PolicyBundle.model_validate(inputs["policy"]),
@@ -43,7 +43,7 @@ execution authorization. A production Policy Enforcement Point must verify autho
 revocation, atomically reserve capacity, issue and consume a single-use grant, submit idempotently,
 and reconcile broker truth.
 
-## What v0.2 guarantees
+## What v0.3 guarantees
 
 - Pure deterministic evaluation: no clock, storage, network, UUID, or randomness reads.
 - Complete binding to policy, intent, account, market, instrument catalog, state version, and time.
@@ -56,7 +56,10 @@ and reconcile broker truth.
 - Byte-identical Apache-licensed conformance vectors for independent implementations.
 
 The full equations, rule order, temporal semantics, and conformance procedure are in
-[`docs/protocol/evaluation-v0.2.md`](docs/protocol/evaluation-v0.2.md).
+[`docs/protocol/evaluation-v0.2.md`](docs/protocol/evaluation-v0.2.md). What v0.3 changes on top of
+it (a required `require_protective_stop` policy field and four protective-stop reason codes, 36 -> 40)
+is in [`docs/protocol/evaluation-v0.3.md`](docs/protocol/evaluation-v0.3.md). v0.3 is a breaking
+change: v0.2 policies and conformance vectors do not validate against a v0.3 engine.
 
 ## Development
 
@@ -77,7 +80,7 @@ the full result, canonical JSON, and SHA-256 byte for byte.
 
 ## Security boundary
 
-Content hashes detect mutation but do not prove issuer identity or current authority. v0.2 has no
+Content hashes detect mutation but do not prove issuer identity or current authority. v0.3 has no
 signature verification, policy registry, revocation lookup, atomic reservation, authorization
 grant, broker adapter, execution receipt, reconciliation service, or coverage proof. These are
 explicit future PEP/evidence layers, not implied capabilities of this kernel.
