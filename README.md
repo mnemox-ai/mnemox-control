@@ -61,6 +61,15 @@ it (a required `require_protective_stop` policy field and four protective-stop r
 is in [`docs/protocol/evaluation-v0.3.md`](docs/protocol/evaluation-v0.3.md). v0.3 is a breaking
 change: v0.2 policies and conformance vectors do not validate against a v0.3 engine.
 
+## Install
+
+```bash
+pip install mnemox-control
+```
+
+Python 3.12 or newer. The engine is AGPL-3.0-only; see [Licensing](#licensing) below. The
+TradeMemory broker proxy (`pip install "tradememory-protocol[proxy]"`) pulls it in as its policy engine.
+
 ## Development
 
 Mnemox Control requires Python 3.12 or newer.
