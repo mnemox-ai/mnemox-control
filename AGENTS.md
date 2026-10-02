@@ -11,6 +11,7 @@
 
 ## Current Status
 
+- **v0.3.1 (2026-10-02, release prepared)** — Sean approved publishing Control to PyPI on 2026-10-02 (reverses the 2026-09-09 "not published" decision) because the TradeMemory broker proxy needs it as a normal dependency. 0.3.1 = 0.3.0 engine plus PyPI metadata, an Install section, and `.github/workflows/publish.yml` (a published GitHub release runs pytest, Ruff, strict mypy, build, then uploads through a PyPI trusted publisher; environment `pypi`). Publishing waits for Sean to add the pending publisher on pypi.org. Local gate on Python 3.12.13: 217 tests, Ruff clean, mypy clean, twine check passed.
 - **v0.3.0 (2026-09-09)** — protocol 0.3 (protective stop) is merged to `main` at `f7d9953` (fast-forward from `feat/protective-stop-v0.3`) and tagged `v0.3.0`. Not published to PyPI; no GitHub release created (Sean's decision 2026-09-09).
 - `PolicyBundle.require_protective_stop` is required with no default; `max_stop_distance_bps` / `min_stop_distance_bps` are optional positive bounds (min strictly below max when both present).
 - `OrderIntent.protective_stop_price` (optional `Decimal`) carries the stop for an entry; reduce-only intents are exempt.
@@ -56,6 +57,7 @@
 
 ## Recent Changes
 
+- 2026-10-02: Prepared v0.3.1 for PyPI (metadata, Install section, publish workflow); version pin in `tests/test_distribution_policy.py` moved to 0.3.1.
 - 2026-09-09: Merged `feat/protective-stop-v0.3` to `main` (fast-forward, `f7d9953`), tagged `v0.3.0`; protocol 0.3 protective stop, breaking for v0.2 bundles; not published to PyPI.
 - 2026-08-30: Added developer README and completed the Python 3.12 pytest/Ruff/mypy/build release gate.
 - 2026-08-30: Designed Evaluation Kernel v0.2 around proof-carrying evaluations, explicit trust roles, temporal/version binding, conservative multi-symbol exposure, rule evidence, and future authorization/reconciliation seams.

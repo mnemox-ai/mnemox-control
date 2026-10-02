@@ -4,13 +4,25 @@ build-backend = "hatchling.build"
 
 [project]
 name = "mnemox-control"
-version = "0.3.0"
+version = "0.3.1"
 description = "Deterministic risk-control and decision-evidence contracts for agentic trading"
 readme = "README.md"
 requires-python = ">=3.12"
 license = "AGPL-3.0-only"
 license-files = ["LICENSE", "LICENSES/AGPL-3.0.txt"]
 dependencies = ["pydantic>=2.12,<3"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Financial and Insurance Industry",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Office/Business :: Financial :: Investment",
+]
+
+[project.urls]
+Homepage = "https://github.com/mnemox-ai/mnemox-control"
+Source = "https://github.com/mnemox-ai/mnemox-control"
+Protocol = "https://github.com/mnemox-ai/mnemox-control/tree/main/docs/protocol"
 
 [project.optional-dependencies]
 dev = [
